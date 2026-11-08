@@ -6,7 +6,7 @@ CampusHub 3D scroll story. Used on the homepage and at /tour/.
 Without JavaScript, with reduced motion, data saver or no WebGL, the chapters
 show as a simple list: nobody misses the content.
 {% endcomment %}
-<section id="story" class="story" data-story data-story-src="{% static 'js/story-scene.js' %}" aria-label="How CampusHub works">
+<section id="story" class="story" data-story data-story-src="{% asset 'js/story-scene.js' %}" aria-label="How CampusHub works">
   <div class="story-stage" data-story-stage></div>
   <div class="story-chapters container-page">
     {% if heading_level != 1 %}
@@ -75,4 +75,4 @@ show as a simple list: nobody misses the content.
     </article>
   </div>
 </section>
-<script type="module" src="{% static 'js/story.js' %}"></script>
+<script type="module" src="{% asset 'js/story.js' %}"></script>

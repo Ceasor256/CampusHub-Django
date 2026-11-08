@@ -10,8 +10,12 @@ CampusHub template helpers (registered as builtins, no {% load %} needed).
 """
 
 import hashlib
+import os
 
 from django import template
+from django.conf import settings
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
 from django.utils import dateformat, timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
@@ -20,6 +24,22 @@ from core.icons import ICONS
 from core.utils import bps_to_percent, format_ug_phone, format_ugx, format_ugx_short
 
 register = template.Library()
+
+
+@register.simple_tag
+def asset(path):
+    """
+    {% asset 'css/app.css' %}: like {% static %}, but in development it adds
+    ?v=<last change time> so the browser fetches the file again after every
+    rebuild instead of showing an old cached copy. In production the
+    WhiteNoise manifest already puts a content hash in the file name.
+    """
+    url = static(path)
+    if settings.DEBUG:
+        found = finders.find(path)
+        if found:
+            url += f"?v={int(os.path.getmtime(found))}"
+    return url
 
 
 @register.simple_tag
