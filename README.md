@@ -414,8 +414,10 @@ To change settings, copy **`.env.example`** to **`.env`** and edit it. It's read
 | **venv stopped working after moving the folder** | Delete the `venv` folder and run `setup.bat`. |
 | **"no such table"** or other database errors | Run `.\venv\Scripts\python.exe manage.py migrate`. If it still fails, reset the database (section 8). |
 | **I didn't get the confirmation or reset email** | In development, emails appear at http://localhost:8010/dev/outbox/. |
-| **The 3D tour shows plain cards instead of the animation** | That's the built-in fallback. It appears when reduce motion or data saver is on, or when the browser or device has no 3D (WebGL) support. Try another browser, or check that hardware acceleration is turned on. |
-| **I changed `assets/story/scene.js` but nothing changed** | Run `npm run story`, then refresh with **Ctrl+F5**. |
+| **I see `{% ... %}` text, no colours, no pictures and no 3D** | You opened an HTML file from `templates/` directly (for example with "Open in browser" or Live Server). Those files only work through Django. Start the server (`run.bat`, or **Run and Debug › CampusHub: run server** in VS Code, which opens the browser for you), then use http://localhost:8010/. |
+| **The 3D tour shows plain cards instead of the animation** | That's the built-in fallback. A note above the cards says why: reduced motion is on (Windows: Settings › Accessibility › Visual effects › **Animation effects**), data saver is on, or the browser has WebGL turned off (turn on hardware acceleration in the browser settings). On the homepage the 3D section is below the listings, gigs and deals; click **See how CampusHub works** in the hero, or open http://localhost:8010/tour/. |
+| **I changed `assets/story/scene.js` but nothing changed** | Run `npm run story`, then refresh the page. |
+| **Sample listings have no pictures** | Run `.\venv\Scripts\python.exe manage.py seed`. It adds an illustrated picture, marked "Sample illustration", to each sample listing. Listings you create show the photos you upload. |
 | **The page looks unstyled** | Make sure `static/css/app.css` exists. If you changed templates, run `npm run css` (section 10). |
 | **"Too many attempts"** | Login, signup and some other actions are rate-limited. Wait 10–15 minutes, or restart the app to clear the limits in development. |
 | **I can't see the Staff link** | Log in with an account that has the moderator or admin role (section 3). |

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from core.sample_art import attach_sample_images
 from core.seed import seed_reference, seed_samples
 
 
@@ -19,3 +20,6 @@ class Command(BaseCommand):
             raise CommandError("Refusing to load sample data with DJANGO_DEBUG off. Use --reference-only.")
         created = seed_samples()
         self.stdout.write("Sample data created. Dev logins: core/seed.py (DEV_ACCOUNTS)." if created else "Sample data already present.")
+        pictures = attach_sample_images()
+        if pictures:
+            self.stdout.write(f"Added illustrated pictures to {pictures} sample listings.")

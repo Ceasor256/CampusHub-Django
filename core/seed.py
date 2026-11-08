@@ -169,4 +169,7 @@ def seed_samples():
 
     Report.objects.create(reporter=student, target_type="listing", target_id=sold.pk, reason="misleading",
                           details="Sample report so the moderation queue isn't empty in development.")
+    from core.sample_art import attach_sample_images
+
+    attach_sample_images()
     return True

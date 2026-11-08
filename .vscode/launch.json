@@ -9,7 +9,12 @@
             "args": ["runserver", "8010"],
             "python": "${workspaceFolder}\\venv\\Scripts\\python.exe",
             "django": true,
-            "justMyCode": true
+            "justMyCode": true,
+            "serverReadyAction": {
+                "pattern": "Starting development server at (https?://\\S+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            }
         },
         {
             "name": "CampusHub: run tests",

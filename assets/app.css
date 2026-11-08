@@ -200,6 +200,7 @@
   .story-title { @apply font-display text-2xl font-semibold; }
   .story-text { @apply mt-2 text-brand-100; }
   .story-hint { display: none; }
+  .story-note { @apply rounded-xl bg-white/10 px-4 py-3 text-sm text-brand-100 ring-1 ring-white/15 sm:col-span-2 lg:col-span-3; }
 
   .story-live .story-stage { @apply sticky top-0 z-0 block h-svh w-full; margin-bottom: -100svh; }
   .story-live .story-stage canvas { @apply block size-full; }
