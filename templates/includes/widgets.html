@@ -1,0 +1,53 @@
+{% comment %}
+Reusable snippets, each selected with `w`:
+  include "includes/widgets.html" with w="empty" icon="store" title="..." body="..." href="..." cta="..."
+  include "includes/widgets.html" with w="pagination" page=page
+  include "includes/widgets.html" with w="report" target_type="listing" target_id=l.pk label="Report listing"
+  include "includes/widgets.html" with w="header" eyebrow="..." title="..." subtitle="..."
+{% endcomment %}
+{% if w == "empty" %}
+  <div class="flex flex-col items-center rounded-[var(--radius-card)] border border-dashed border-line bg-surface px-6 py-12 text-center">
+    {% if icon %}<div class="mb-3 grid size-12 place-items-center rounded-2xl bg-brand-50 text-brand-600">{% icon icon "size-6" %}</div>{% endif %}
+    <h3 class="font-semibold">{{ title }}</h3>
+    {% if body %}<p class="mt-1 max-w-sm text-sm text-ink-2">{{ body }}</p>{% endif %}
+    {% if href %}<a href="{{ href }}" class="btn btn-primary mt-4">{{ cta }}</a>{% endif %}
+  </div>
+{% elif w == "pagination" %}
+  {% if page.paginator.num_pages > 1 %}
+    <nav aria-label="Pagination" class="mt-8 flex items-center justify-center gap-2">
+      {% if page.has_previous %}<a class="btn btn-secondary btn-sm" href="{% querystring_set request 'page' page.previous_page_number %}">← Previous</a>{% endif %}
+      <span class="px-2 text-sm text-ink-2">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a class="btn btn-secondary btn-sm" href="{% querystring_set request 'page' page.next_page_number %}">Next →</a>{% endif %}
+    </nav>
+  {% endif %}
+{% elif w == "report" %}
+  {% if user.is_authenticated %}
+    <button type="button" class="btn btn-ghost btn-sm text-ink-3" data-dialog-open="report-{{ target_id }}">{% icon "flag" "size-4" %} {{ label|default:"Report" }}</button>
+    <dialog id="report-{{ target_id }}" class="modal">
+      <form method="post" action="{% url 'core:report' %}" class="space-y-4 p-5">
+        {% csrf_token %}
+        <input type="hidden" name="target_type" value="{{ target_type }}"><input type="hidden" name="target_id" value="{{ target_id }}">
+        <div class="flex items-center justify-between"><h2 class="font-bold">Report a problem</h2><button type="button" data-dialog-close class="rounded-lg p-1 text-ink-3 hover:bg-canvas" aria-label="Close">{% icon "x" %}</button></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="reason-{{ target_id }}">What's wrong?</label>
+          <select class="input" id="reason-{{ target_id }}" name="reason" required>
+            <option value="">Choose a reason</option><option value="scam_or_fraud">Scam or fraud</option><option value="prohibited_item">Prohibited or illegal item</option>
+            <option value="academic_dishonesty">Academic dishonesty</option><option value="harassment">Harassment or abuse</option><option value="misleading">Misleading or fake</option>
+            <option value="spam">Spam</option><option value="other">Something else</option>
+          </select></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="details-{{ target_id }}">Details <span class="font-normal text-ink-3">(optional)</span></label>
+          <textarea class="input" id="details-{{ target_id }}" name="details" rows="3" maxlength="1000" placeholder="Anything that helps our moderators understand."></textarea></div>
+        <p class="text-xs text-ink-3">Reports are confidential. If you are in danger, call the Uganda Police on 999 or 112, or your campus security.</p>
+        <button class="btn btn-primary btn-full" data-pending="Sending…">Send report</button>
+      </form>
+    </dialog>
+  {% endif %}
+{% elif w == "header" %}
+  <div class="flex flex-col gap-3 py-6 sm:flex-row sm:items-end sm:justify-between">
+    <div class="min-w-0">
+      {% if eyebrow %}<div class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600">{{ eyebrow }}</div>{% endif %}
+      <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ title }}</h1>
+      {% if subtitle %}<p class="mt-1 text-ink-2">{{ subtitle }}</p>{% endif %}
+    </div>
+    {% if cta_href %}<a href="{{ cta_href }}" class="btn btn-primary shrink-0">{{ cta }}</a>{% endif %}
+  </div>
+{% endif %}

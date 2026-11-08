@@ -1,0 +1,7 @@
+-r requirements.txt
+psycopg[binary]==3.3.6
+gunicorn==23.0.0
+# For S3-compatible object storage (Supabase Storage, Cloudflare R2, AWS S3):
+# django-storages[s3]
+# For a shared rate-limit cache across workers:
+# redis

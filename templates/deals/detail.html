@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ d.title }}{% endblock %}
+{% block content %}
+<div class="container-page max-w-4xl py-6 pb-12">
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm text-ink-3"><a href="{% url 'deals:browse' %}" class="hover:text-brand-700">Deals</a> / {{ d.business.name }}</nav>
+  {% if not d.is_live %}<div class="alert alert-warning mb-4">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div><strong>This deal isn't live.</strong> Status: {{ d.get_status_display }}</div></div>{% endif %}
+  <div class="grid gap-6 md:grid-cols-[1.3fr_1fr]">
+    <div class="card overflow-hidden">
+      <div class="flex items-center justify-between bg-gradient-to-r from-accent-300 to-accent-100 px-6 py-6">
+        <span class="text-3xl font-extrabold tracking-tight text-accent-900">{{ d.discount_label }}</span>
+        <div class="flex gap-1">{% if d.is_sponsored %}<span class="badge badge-neutral" title="Paid placement">Sponsored</span>{% endif %}{% sample_badge d.is_sample %}</div>
+      </div>
+      <div class="space-y-4 p-6">
+        <h1 class="text-2xl font-bold tracking-tight">{{ d.title }}</h1>
+        {% if d.deal_price_ugx is not None %}<div class="text-lg"><span class="font-bold">{{ d.deal_price_ugx|ugx }}</span>{% if d.original_price_ugx is not None %}<span class="ml-2 text-ink-3 line-through">{{ d.original_price_ugx|ugx }}</span>{% endif %}</div>{% endif %}
+        <p class="whitespace-pre-line text-ink-2">{{ d.description }}</p>
+        {% if d.terms %}<div class="rounded-xl bg-canvas p-4 text-sm"><div class="font-semibold">Terms</div><p class="mt-1 whitespace-pre-line text-ink-2">{{ d.terms }}</p></div>{% endif %}
+        <dl class="grid grid-cols-2 gap-3 text-sm">
+          <div><dt class="text-ink-3">Valid until</dt><dd class="font-semibold">{{ d.ends_at|date:"j M Y, H:i" }}</dd></div>
+          <div><dt class="text-ink-3">Where</dt><dd class="font-semibold">{% if d.campus %}{{ d.campus }}{% else %}All campuses{% endif %}</dd></div>
+          {% if d.remaining is not None %}<div><dt class="text-ink-3">Remaining</dt><dd class="font-semibold">{{ d.remaining }} of {{ d.max_claims }}</dd></div>{% endif %}
+        </dl>
+      </div>
+    </div>
+    <div class="space-y-4">
+      <div class="card p-5">
+        {% if is_owner %}
+          <p class="font-semibold">This is your deal.</p><p class="text-sm text-ink-2">{{ d.view_count }} views · {{ d.claim_count }} claims</p>
+          <a href="{% url 'deals:dashboard' d.business.pk %}" class="btn btn-secondary btn-full mt-3">Manage in business dashboard</a>
+        {% elif not user.is_authenticated %}
+          <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="btn btn-primary btn-lg btn-full">Log in to claim</a>
+        {% elif claim %}
+          <div class="space-y-3 text-center">
+            <div class="text-sm font-semibold text-ink-2">{% if claim.redeemed_at %}Redeemed on {{ claim.redeemed_at|date:"j M Y, H:i" }}{% else %}Your code. Show it at the counter:{% endif %}</div>
+            <div class="rounded-2xl border-2 border-dashed px-4 py-5 font-mono text-3xl font-bold tracking-widest {% if claim.redeemed_at %}border-line text-ink-3 line-through{% else %}border-accent-400 bg-accent-50{% endif %}">{{ claim.code }}</div>
+            {% if not claim.redeemed_at %}<button type="button" class="btn btn-secondary btn-sm" data-copy="{{ claim.code }}">Copy code</button>{% endif %}
+            <p class="text-xs text-ink-3">Each code works once. Find it any time under Me → My deals.</p>
+          </div>
+        {% elif not d.is_live %}<p class="text-sm text-ink-2">This deal can't be claimed right now.</p>
+        {% elif campus_mismatch %}<div class="alert alert-info">{% icon "info" "mt-0.5 size-4 shrink-0" %}<div>This deal is only for students at {{ d.campus }}.</div></div>
+        {% elif d.remaining == 0 %}<div class="alert alert-warning">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div>All claims have been taken.</div></div>
+        {% else %}
+          <form method="post" action="{% url 'deals:claim' d.pk %}">{% csrf_token %}<button class="btn btn-accent btn-lg btn-full" data-pending="Claiming…">{% icon "ticket" %} Claim this deal</button></form>
+        {% endif %}
+      </div>
+      <div class="card p-5">
+        <a href="{% url 'deals:business_public' d.business.slug %}" class="font-bold hover:text-brand-700">{{ d.business.name }}</a>
+        <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-3">{{ d.business.kind }} {% if d.business.is_verified %}{% verified_badge "Verified business" %}{% endif %}</div>
+        <div class="mt-3 space-y-1.5 text-sm text-ink-2">
+          <div class="flex items-center gap-2">{% icon "map-pin" "size-4 shrink-0" %} {{ d.business.address }}</div>
+          {% if d.business.phone %}<a href="tel:{{ d.business.phone }}" class="flex items-center gap-2 hover:text-brand-700">{% icon "phone" "size-4 shrink-0" %} {{ d.business.phone|phone }}</a>{% endif %}
+        </div>
+      </div>
+      {% if not is_owner %}<div class="flex justify-end">{% include "includes/widgets.html" with w="report" target_type="deal" target_id=d.pk label="Report deal" %}</div>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

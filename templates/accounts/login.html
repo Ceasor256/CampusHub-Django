@@ -1,0 +1,15 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Log in{% endblock %}
+{% block heading %}Welcome back{% endblock %}
+{% block subheading %}Log in to message sellers, post items and claim deals.{% endblock %}
+{% block form %}
+<form method="post" class="space-y-4" novalidate>
+  {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+  {% include "includes/form_errors.html" %}
+  {% include "includes/field.html" with field=form.email label="Email" %}
+  {% include "includes/field.html" with field=form.password label="Password" %}
+  <div class="text-right text-sm"><a href="{% url 'accounts:forgot_password' %}" class="font-semibold text-brand-600">Forgot password?</a></div>
+  <button class="btn btn-primary btn-lg btn-full" data-pending="Logging in…">Log in</button>
+</form>
+{% endblock %}
+{% block below %}New to CampusHub? <a href="{% url 'accounts:register' %}?next={{ next|urlencode }}" class="font-semibold text-brand-600">Create a free account</a>{% endblock %}

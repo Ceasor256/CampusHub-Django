@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Conversation{% endblock %}
+{% block tabbar %}{% endblock %}
+{% block content %}
+<div class="container-page flex h-[calc(100dvh-4rem)] max-w-3xl flex-col py-3">
+  <div class="flex items-center gap-3 border-b border-line pb-3">
+    <a href="{% url 'messaging:inbox' %}" class="rounded-lg p-2 hover:bg-canvas" aria-label="Back to messages">{% icon "arrow-left" %}</a>
+    {% if other %}
+      <a href="{% url 'accounts:profile' other.pk %}" class="flex min-w-0 flex-1 items-center gap-3">{% avatar other.full_name "sm" %}
+        <div class="min-w-0"><div class="truncate font-semibold">{{ other.full_name }}</div>
+          {% if conv.listing or conv.gig %}<div class="truncate text-xs text-ink-3">About: {% if conv.listing %}{{ conv.listing.title }}{% else %}{{ conv.gig.title }}{% endif %}</div>{% endif %}</div></a>
+    {% endif %}
+    {% if conv.listing %}<a href="{% url 'marketplace:detail' conv.listing.pk %}" class="hidden shrink-0 text-sm font-semibold text-brand-600 sm:block">View item</a>
+    {% elif conv.gig %}<a href="{% url 'gigs:detail' conv.gig.pk %}" class="hidden shrink-0 text-sm font-semibold text-brand-600 sm:block">View gig</a>{% endif %}
+    {% if other %}{% include "includes/widgets.html" with w="report" target_type="user" target_id=other.pk label="" %}{% endif %}
+  </div>
+  <ol class="flex-1 space-y-2 overflow-y-auto py-4" aria-label="Messages">
+    {% for m in msgs %}
+      <li>
+        {% ifchanged m.created_at.date %}<div class="my-3 text-center text-xs font-semibold text-ink-3">{{ m.created_at|date:"j M Y" }}</div>{% endifchanged %}
+        <div class="flex {% if m.sender_id == user.pk %}justify-end{% else %}justify-start{% endif %}">
+          <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-[15px] {% if m.sender_id == user.pk %}rounded-br-md bg-brand-600 text-white{% else %}rounded-bl-md bg-surface ring-1 ring-line{% endif %}" title="{{ m.created_at|date:'j M Y, H:i' }}">
+            <p class="whitespace-pre-line break-words">{{ m.body }}</p>
+            <div class="mt-0.5 text-right text-[11px] {% if m.sender_id == user.pk %}text-brand-100{% else %}text-ink-3{% endif %}">{{ m.created_at|time:"H:i" }}</div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+  <div class="border-t border-line pt-3">
+    <p class="mb-2 text-center text-[11px] text-ink-3">Never send mobile money before meeting. CampusHub staff will never ask for your PIN.</p>
+    {% if form.non_field_errors %}<p class="mb-2 text-sm text-danger">{{ form.non_field_errors|first }}</p>{% endif %}
+    <form method="post" class="flex items-end gap-2">{% csrf_token %}
+      <label for="body" class="sr-only">Message</label>
+      <textarea id="body" name="body" rows="1" maxlength="2000" required data-enter-submit autofocus placeholder="Write a message…" class="input max-h-40 min-h-11 flex-1 resize-y"></textarea>
+      <button class="btn btn-primary h-11 w-11 !px-0" aria-label="Send">{% icon "send" "size-4" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

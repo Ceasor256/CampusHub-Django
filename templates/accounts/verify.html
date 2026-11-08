@@ -1,0 +1,11 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Confirm email{% endblock %}
+{% block heading %}Confirm your email{% endblock %}
+{% block subheading %}One tap and you're verified.{% endblock %}
+{% block form %}
+{% if error %}
+  <div class="alert alert-danger" role="alert">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div>{{ error }}</div></div>
+{% else %}
+<form method="post">{% csrf_token %}<button class="btn btn-primary btn-lg btn-full" data-pending="Confirming…">Confirm my email</button></form>
+{% endif %}
+{% endblock %}

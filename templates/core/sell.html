@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Post on CampusHub{% endblock %}
+{% block content %}
+<div class="container-page max-w-3xl pb-12">
+  {% include "includes/widgets.html" with w="header" title="What would you like to post?" %}
+  <div class="grid gap-3 sm:grid-cols-3">
+    <a href="{% url 'marketplace:create' %}" class="rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-[var(--shadow-pop)]"><span class="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon "store" %}</span><h2 class="mt-4 font-bold">Sell an item</h2><p class="mt-1 text-sm text-ink-2">Phones, laptops, books, furniture, clothes and more.</p></a>
+    <a href="{% url 'gigs:create' %}" class="rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-[var(--shadow-pop)]"><span class="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon "briefcase" %}</span><h2 class="mt-4 font-bold">Post a gig</h2><p class="mt-1 text-sm text-ink-2">Get help with design, moving, printing, tutoring or events.</p></a>
+    <a href="{% url 'deals:business_home' %}" class="rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-[var(--shadow-pop)]"><span class="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon "tag" %}</span><h2 class="mt-4 font-bold">Offer a business deal</h2><p class="mt-1 text-sm text-ink-2">For restaurants, print shops, salons and other businesses.</p></a>
+  </div>
+</div>
+{% endblock %}

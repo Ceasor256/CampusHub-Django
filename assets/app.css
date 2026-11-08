@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+/* Scan Django templates, template tags and JS for class names. */
+@source "../templates";
+@source "../*/templates";
+@source "../core/templatetags";
+@source "../*/forms.py";
+@source "../static/js";
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("../font/plus-jakarta-sans-latin.woff2") format("woff2-variations");
+}
+
+/*
+ * CampusHub design tokens (same as the Next.js build).
+ * Brand: "Jacaranda" purple + "Matooke" amber accent.
+ */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-brand-50: #f5f1fe;
+  --color-brand-100: #ebe3fd;
+  --color-brand-200: #d7c8fb;
+  --color-brand-300: #b9a0f6;
+  --color-brand-400: #9670ef;
+  --color-brand-500: #7a4be4;
+  --color-brand-600: #6633d1;
+  --color-brand-700: #5527b0;
+  --color-brand-800: #46228f;
+  --color-brand-900: #3a1f73;
+  --color-brand-950: #22104a;
+
+  --color-accent-50: #fff8e6;
+  --color-accent-100: #ffedbf;
+  --color-accent-300: #ffcf5c;
+  --color-accent-400: #fbbd2e;
+  --color-accent-500: #f2a60c;
+  --color-accent-700: #a86605;
+  --color-accent-900: #6b3d0a;
+
+  --color-ink: #17131f;
+  --color-ink-2: #4a4458;
+  --color-ink-3: #7a7389;
+  --color-line: #e9e5ef;
+  --color-surface: #ffffff;
+  --color-canvas: #f8f7fa;
+
+  --color-success: #138a52;
+  --color-success-bg: #e8f7ef;
+  --color-danger: #c7322b;
+  --color-danger-bg: #fdecea;
+  --color-warning: #a35d00;
+  --color-warning-bg: #fff4e0;
+  --color-info: #2457c5;
+  --color-info-bg: #eaf0fd;
+
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 2px rgb(23 19 31 / 0.04), 0 1px 3px rgb(23 19 31 / 0.06);
+  --shadow-pop: 0 10px 30px -10px rgb(34 16 74 / 0.25);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-brand-200);
+  }
+  dialog::backdrop {
+    background: rgb(23 19 31 / 0.4);
+  }
+}
+
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 76rem;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------ components */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 h-11 px-4 text-sm;
+  }
+  .btn-sm { @apply h-9 px-3 text-sm; }
+  .btn-lg { @apply h-12 px-6 text-base; }
+  .btn-full { @apply w-full; }
+  .btn-primary { @apply bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800; }
+  .btn-accent { @apply bg-accent-400 text-ink hover:bg-accent-300; }
+  .btn-secondary { @apply border border-line bg-surface text-ink hover:bg-canvas; }
+  .btn-ghost { @apply text-ink-2 hover:bg-brand-50 hover:text-brand-700; }
+  .btn-danger { @apply bg-danger text-white hover:brightness-95; }
+
+  .card { @apply rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)]; }
+
+  .input {
+    @apply block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-[15px] text-ink placeholder:text-ink-3 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200;
+  }
+  .input[aria-invalid="true"] { @apply border-danger focus:ring-danger/30; }
+  textarea.input { @apply min-h-28; }
+  select.input { @apply pr-8; }
+
+  .badge { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold; }
+  .badge-neutral { @apply bg-canvas text-ink-2 ring-1 ring-line; }
+  .badge-brand { @apply bg-brand-50 text-brand-700; }
+  .badge-success { @apply bg-success-bg text-success; }
+  .badge-warning { @apply bg-warning-bg text-warning; }
+  .badge-danger { @apply bg-danger-bg text-danger; }
+  .badge-info { @apply bg-info-bg text-info; }
+  .badge-accent { @apply bg-accent-100 text-accent-900; }
+
+  .alert { @apply flex gap-3 rounded-xl p-3 text-sm; }
+  .alert-info { @apply bg-info-bg text-info; }
+  .alert-success { @apply bg-success-bg text-success; }
+  .alert-warning { @apply bg-warning-bg text-warning; }
+  .alert-danger { @apply bg-danger-bg text-danger; }
+
+  .chip { @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-ink-2 transition-colors hover:border-brand-200 hover:text-brand-700; }
+  .chip-active { @apply border-brand-600 bg-brand-600 text-white hover:text-white; }
+
+  .tab { @apply shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold bg-surface ring-1 ring-line; }
+  .tab-active { @apply bg-ink text-white ring-ink; }
+
+  .table { @apply w-full text-sm; }
+  .table thead { @apply bg-canvas text-left text-xs uppercase tracking-wide text-ink-3; }
+  .table th { @apply px-3 py-2 font-semibold; }
+  .table td { @apply px-3 py-2.5 align-top; }
+  .table tbody tr { @apply border-t border-line; }
+
+  .modal { @apply m-auto w-[min(30rem,calc(100vw-2rem))] rounded-2xl p-0 shadow-[var(--shadow-pop)]; }
+
+  .prose-page h2 { @apply mt-8 text-lg font-bold text-ink; }
+  .prose-page p, .prose-page ul { @apply mt-3 text-ink-2; }
+  .prose-page li { @apply ml-5 list-disc pl-1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

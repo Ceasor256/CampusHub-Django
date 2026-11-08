@@ -1,0 +1,14 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Choose your campus{% endblock %}
+{% block heading %}Welcome, {{ user.first_name_display }} 👋{% endblock %}
+{% block subheading %}Two quick details and you're in.{% endblock %}
+{% block form %}
+<form method="post" class="space-y-5" novalidate>
+  {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+  {% include "includes/form_errors.html" %}
+  {% include "includes/field.html" with field=form.campus %}
+  {% include "includes/field.html" with field=form.phone %}
+  <button class="btn btn-primary btn-lg btn-full" data-pending="Saving…">Continue</button>
+  <p class="text-center text-xs text-ink-3">Don't see your campus? Email campuses@campushub.ug and we'll add it.</p>
+</form>
+{% endblock %}

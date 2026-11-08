@@ -1,0 +1,23 @@
+{% extends "staff/base.html" %}
+{% block title %}Deals{% endblock %}
+{% block heading %}Deals{% endblock %}
+{% block subheading %}Deals from unverified businesses wait here for review.{% endblock %}
+{% block staff %}
+<div class="mb-4 flex flex-wrap gap-1">{% for f in filters %}<a href="?status={{ f }}" class="tab {% if status == f %}tab-active{% endif %}">{% if f %}{{ f|cut:"_"|capfirst }}{% else %}All{% endif %}</a>{% endfor %}</div>
+{% if not rows %}{% include "includes/widgets.html" with w="empty" title="No deals" %}{% else %}
+<div class="space-y-3">
+  {% for d in rows %}
+    <div class="card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2"><a href="{% url 'deals:detail' d.pk %}" class="font-semibold hover:text-brand-700">{{ d.title }}</a>{% status_badge d.status %}{% sample_badge d.is_sample %}</div>
+        <div class="text-sm text-ink-3">{{ d.discount_label }} · {{ d.business.name }} ({{ d.business.get_verification_display|lower }}) · ends {{ d.ends_at|date:"j M Y" }} · {{ d.claim_count }} claims</div>
+      </div>
+      {% if user.can_moderate %}<div class="flex shrink-0 gap-2">
+        {% if d.status != "active" and d.status != "removed" %}<form method="post" action="{% url 'staff:act' 'moderate_deal' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ d.pk }}"><input type="hidden" name="decision" value="active"><button class="btn btn-primary btn-sm">Approve</button></form>{% endif %}
+        {% if d.status == "pending_review" %}<form method="post" action="{% url 'staff:act' 'moderate_deal' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ d.pk }}"><input type="hidden" name="decision" value="rejected"><button class="btn btn-secondary btn-sm">Reject</button></form>{% endif %}
+        {% if d.status != "removed" %}{% with "dr-"|add:d.pk.hex as dl %}{% include "staff/_confirm.html" with op="moderate_deal" id=d.pk dlg=dl label="Remove" title="Remove this deal?" k1="decision" v1="removed" danger=True %}{% endwith %}{% endif %}
+      </div>{% endif %}
+    </div>
+  {% endfor %}
+</div>{% endif %}
+{% endblock %}

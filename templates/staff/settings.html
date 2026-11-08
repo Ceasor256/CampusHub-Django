@@ -1,0 +1,23 @@
+{% extends "staff/base.html" %}
+{% block title %}Fees & settings{% endblock %}
+{% block heading %}Fees &amp; settings{% endblock %}
+{% block staff %}
+<div class="card p-5">
+  <h2 class="mb-1 font-bold">Commission rates</h2>
+  <p class="mb-4 text-sm text-ink-2">Rates apply to new transactions only. Every change is recorded in the audit log with before/after values.</p>
+  <form method="post" action="{% url 'staff:act' 'commissions' %}" class="space-y-4">{% csrf_token %}
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="space-y-1.5"><label class="text-sm font-semibold" for="marketplace">Marketplace commission (%)</label><input id="marketplace" name="marketplace" type="number" step="0.01" min="0" max="50" value="{{ c.rates.marketplace|percent_bps|cut:'%' }}" class="input"></div>
+      <div class="space-y-1.5"><label class="text-sm font-semibold" for="gigs">Gigs commission (%)</label><input id="gigs" name="gigs" type="number" step="0.01" min="0" max="50" value="{{ c.rates.gigs|percent_bps|cut:'%' }}" class="input"></div>
+    </div>
+    <label class="flex items-start gap-2 text-sm"><input type="checkbox" name="enabled" {% if c.enabled %}checked{% endif %} class="mt-0.5 size-4 accent-brand-600">
+      <span><strong>Accrue commissions on new transactions.</strong> Leave off until in-app payments are live and users have been told about fees. When on, new transactions record the fee as “accrued” (owed), not “collected”.</span></label>
+    <button class="btn btn-primary">Save settings</button>
+  </form>
+</div>
+<div class="card mt-6 p-5">
+  <h2 class="font-bold">Payments</h2>
+  <div class="alert {% if provider == 'test' %}alert-warning{% else %}alert-info{% endif %} mt-3">{% icon "info" "mt-0.5 size-4 shrink-0" %}<div><strong>Provider: {{ provider }}.</strong>
+    {% if provider == "test" %}Only the test provider is configured. No real money can move and nothing is shown to users as paid. Configure a mobile-money provider (see docs/PAYMENTS.md) to enable checkout.{% else %}Live provider configured.{% endif %}</div></div>
+</div>
+{% endblock %}

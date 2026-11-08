@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Post a gig{% endblock %}
+{% block content %}
+<div class="container-page max-w-2xl pb-10">
+  {% include "includes/widgets.html" with w="header" eyebrow="Gigs" title="Post a gig" subtitle="Describe the task and your budget. Students apply, you choose who does it." %}
+  {% if user.is_suspended %}
+    <div class="alert alert-danger">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div>You can't post while your account is suspended.</div></div>
+  {% else %}
+  <form method="post" class="space-y-5" novalidate>{% csrf_token %}
+    {% include "includes/form_errors.html" %}
+    <div class="card space-y-5 p-5">
+      {% include "includes/field.html" with field=form.title %}
+      {% include "includes/field.html" with field=form.category %}
+      {% include "includes/field.html" with field=form.description %}
+    </div>
+    <div class="card space-y-5 p-5">
+      <div class="grid gap-5 sm:grid-cols-2">
+        {% include "includes/field.html" with field=form.budget_ugx prefix="UGX" %}
+        {% include "includes/field.html" with field=form.deadline %}
+        {% include "includes/field.html" with field=form.mode %}
+        {% include "includes/field.html" with field=form.campus %}
+      </div>
+      {% include "includes/field.html" with field=form.location_note %}
+    </div>
+    <p class="text-xs text-ink-3">Gigs must be legal and honest. CampusHub doesn't allow paying someone to sit exams or complete graded coursework for you. Study help and tutoring are welcome.</p>
+    <button class="btn btn-primary btn-lg btn-full" data-pending="Posting…">Post gig</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Dev email outbox{% endblock %}
+{% block content %}
+<div class="container-page max-w-3xl pb-12">
+  {% include "includes/widgets.html" with w="header" eyebrow="Development" title="Email outbox" %}
+  <div class="alert alert-warning mb-4">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div><strong>Development only.</strong> No real emails are sent. This page doesn't exist in production.</div></div>
+  <div class="space-y-3">
+    {% for m in mails %}
+      <div class="card p-4"><div class="text-xs text-ink-3">{{ m.created_at|date:"j M Y, H:i" }} · to {{ m.to }}</div><div class="font-semibold">{{ m.subject }}</div>
+        <pre class="mt-2 whitespace-pre-wrap break-all font-sans text-sm text-ink-2">{{ m.body|urlize }}</pre></div>
+    {% empty %}<p class="text-ink-3">No emails yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

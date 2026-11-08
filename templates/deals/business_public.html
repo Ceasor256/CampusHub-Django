@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ b.name }}{% endblock %}
+{% block content %}
+<div class="container-page py-8 pb-12">
+  {% if b.status == "suspended" %}<div class="alert alert-danger mb-4">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div>This business is suspended.</div></div>{% endif %}
+  <div class="card p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex items-start gap-4">
+        <span class="grid size-16 shrink-0 place-items-center rounded-2xl bg-accent-100 text-2xl font-extrabold text-accent-900">{{ b.name|first }}</span>
+        <div>
+          <div class="flex flex-wrap items-center gap-2"><h1 class="text-2xl font-bold tracking-tight">{{ b.name }}</h1>{% if b.is_verified %}{% verified_badge "Verified business" %}{% endif %}{% sample_badge b.is_sample %}</div>
+          <div class="text-ink-3">{{ b.kind }} · On CampusHub since {{ b.created_at|date:"M Y" }}</div>
+          <p class="mt-3 max-w-2xl whitespace-pre-line text-ink-2">{{ b.description }}</p>
+        </div>
+      </div>
+      <div class="space-y-1.5 text-sm text-ink-2 sm:w-64">
+        <div class="flex items-center gap-2">{% icon "map-pin" "size-4 shrink-0" %} {{ b.address }}</div>
+        {% if b.phone %}<a href="tel:{{ b.phone }}" class="flex items-center gap-2 hover:text-brand-700">{% icon "phone" "size-4 shrink-0" %} {{ b.phone|phone }}</a>{% endif %}
+        {% if b.email %}<a href="mailto:{{ b.email }}" class="flex items-center gap-2 hover:text-brand-700">{% icon "mail" "size-4 shrink-0" %} {{ b.email }}</a>{% endif %}
+        {% if user.pk != b.owner_id %}{% include "includes/widgets.html" with w="report" target_type="business" target_id=b.pk label="Report business" %}{% endif %}
+      </div>
+    </div>
+  </div>
+  <h2 class="mb-3 mt-8 text-lg font-bold">Current deals</h2>
+  {% if deals %}<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{% for d in deals %}{% include "includes/deal_card.html" %}{% endfor %}</div>
+  {% else %}{% include "includes/widgets.html" with w="empty" icon="tag" title="No live deals right now" %}{% endif %}
+</div>
+{% endblock %}

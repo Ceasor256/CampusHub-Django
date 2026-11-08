@@ -1,0 +1,45 @@
+{% extends "staff/base.html" %}
+{% block title %}Campuses{% endblock %}
+{% block heading %}Institutions &amp; campuses{% endblock %}
+{% block subheading %}New campuses appear in onboarding and filters as soon as they're active.{% endblock %}
+{% block staff %}
+<div class="space-y-3">
+  {% for i in insts %}
+    <div class="card p-4">
+      <div class="font-semibold">{{ i.name }} <span class="text-ink-3">({{ i.short_name }}) · {{ i.city }}</span></div>
+      <ul class="mt-2 divide-y divide-line">
+        {% for c in i.campuses.all %}
+          <li class="flex items-center justify-between gap-3 py-2 text-sm">
+            <div>{{ c.name }} <span class="text-ink-3">· {{ c.area }}</span><div class="text-xs text-ink-3">{{ c.members.count }} members · {{ c.listings.count }} listings</div></div>
+            <div class="flex items-center gap-2">{% if c.is_active %}{% status_badge "active" %}{% else %}{% status_badge "paused" "Inactive" %}{% endif %}
+              {% if user.is_platform_admin %}<form method="post" action="{% url 'staff:act' 'campus_active' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ c.pk }}"><input type="hidden" name="active" value="{% if c.is_active %}0{% else %}1{% endif %}"><button class="btn btn-ghost btn-sm">{% if c.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}</div>
+          </li>
+        {% empty %}<li class="py-2 text-sm text-ink-3">No campuses yet.</li>{% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</div>
+{% if user.is_platform_admin %}
+<div class="mt-6 grid gap-6 xl:grid-cols-2">
+  <div class="card p-5"><h2 class="mb-3 font-bold">Add a campus</h2>
+    <form method="post" action="{% url 'staff:act' 'create_campus' %}" class="space-y-3">{% csrf_token %}
+      <div class="grid gap-3 sm:grid-cols-3">
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="c-inst">Institution</label><select id="c-inst" name="institution" class="input" required><option value="">Choose</option>{% for i in insts %}<option value="{{ i.pk }}">{{ i.short_name }}</option>{% endfor %}</select></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="c-name">Campus name</label><input id="c-name" name="name" required class="input" placeholder="Main Campus"></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="c-area">Area</label><input id="c-area" name="area" required class="input" placeholder="Luweero"></div>
+      </div>
+      <button class="btn btn-primary btn-sm">Add campus</button>
+    </form></div>
+  <div class="card p-5"><h2 class="mb-3 font-bold">Add an institution</h2>
+    <form method="post" action="{% url 'staff:act' 'create_institution' %}" class="space-y-3">{% csrf_token %}
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="i-name">Name</label><input id="i-name" name="name" required class="input" placeholder="Ndejje University"></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="i-short">Short name</label><input id="i-short" name="short_name" required maxlength="12" class="input" placeholder="NDU"></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="i-city">City / town</label><input id="i-city" name="city" required class="input"></div>
+        <div class="space-y-1.5"><label class="text-sm font-semibold" for="i-type">Type</label><select id="i-type" name="type" class="input"><option value="university">University</option><option value="college">College</option><option value="institute">Institute</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-sm">Add institution</button>
+    </form></div>
+</div>
+{% endif %}
+{% endblock %}

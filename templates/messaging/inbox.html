@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+{% block content %}
+<div class="container-page max-w-3xl pb-12">
+  {% include "includes/widgets.html" with w="header" title="Messages" subtitle="Chats with buyers, sellers and gig partners." %}
+  {% if not rows %}
+    {% url 'marketplace:browse' as u %}{% include "includes/widgets.html" with w="empty" icon="message-circle" title="No conversations yet" body="When you message a seller or someone messages you, it shows up here." href=u cta="Browse the marketplace" %}
+  {% else %}
+    <ul class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
+      {% for row in rows %}
+        <li><a href="{% url 'messaging:conversation' row.c.pk %}" class="flex items-center gap-3 px-4 py-3 hover:bg-canvas">
+          {% avatar row.other.full_name %}
+          <div class="min-w-0 flex-1">
+            <div class="flex items-baseline justify-between gap-2"><span class="truncate {% if row.unread %}font-bold{% else %}font-semibold{% endif %}">{{ row.other.full_name }}</span><span class="shrink-0 text-xs text-ink-3">{{ row.c.last_message_at|ago }}</span></div>
+            {% if row.c.listing or row.c.gig %}<div class="truncate text-xs font-medium text-brand-600">{% if row.c.listing %}{{ row.c.listing.title }}{% else %}{{ row.c.gig.title }}{% endif %}</div>{% endif %}
+            <div class="truncate text-sm {% if row.unread %}text-ink{% else %}text-ink-3{% endif %}">{{ row.c.last_body }}</div>
+          </div>
+          {% if row.unread %}<span class="grid min-w-5 place-items-center rounded-full bg-brand-600 px-1.5 text-xs font-bold text-white">{{ row.unread }}</span>{% endif %}
+        </a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+{% endblock %}

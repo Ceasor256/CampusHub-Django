@@ -1,0 +1,112 @@
+{% load static %}<!doctype html>
+<html lang="en-UG">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6633d1">
+  <meta name="description" content="Buy and sell, find gigs, and get student deals around your university in Uganda.">
+  <title>{% block title %}Uganda's campus marketplace{% endblock %} · CampusHub</title>
+  <link rel="icon" href="{% static 'img/icon.svg' %}" type="image/svg+xml">
+  <link rel="preload" href="{% static 'font/plus-jakarta-sans-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body class="min-h-dvh font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-surface focus:p-2">Skip to content</a>
+
+  <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
+    <div class="container-page flex h-16 items-center gap-3">
+      {% include "includes/logo.html" %}
+      <nav aria-label="Main" class="hidden items-center gap-1 lg:flex">
+        {% with p=request.path %}
+          <a href="{% url 'marketplace:browse' %}" class="rounded-lg px-3 py-2 text-sm font-semibold {% if p|slice:':12' == '/marketplace' %}bg-brand-50 text-brand-700{% else %}text-ink-2 hover:bg-canvas hover:text-ink{% endif %}">Marketplace</a>
+          <a href="{% url 'gigs:browse' %}" class="rounded-lg px-3 py-2 text-sm font-semibold {% if p|slice:':5' == '/gigs' %}bg-brand-50 text-brand-700{% else %}text-ink-2 hover:bg-canvas hover:text-ink{% endif %}">Gigs</a>
+          <a href="{% url 'deals:browse' %}" class="rounded-lg px-3 py-2 text-sm font-semibold {% if p|slice:':6' == '/deals' %}bg-brand-50 text-brand-700{% else %}text-ink-2 hover:bg-canvas hover:text-ink{% endif %}">Deals</a>
+          <a href="{% url 'core:services' %}" class="rounded-lg px-3 py-2 text-sm font-semibold {% if p|slice:':9' == '/services' %}bg-brand-50 text-brand-700{% else %}text-ink-2 hover:bg-canvas hover:text-ink{% endif %}">Services</a>
+        {% endwith %}
+      </nav>
+      <form action="{% url 'marketplace:browse' %}" class="ml-auto hidden max-w-xs flex-1 md:block" role="search">
+        <label class="relative block">
+          <span class="sr-only">Search CampusHub</span>
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3">{% icon "search" "size-4" %}</span>
+          <input name="q" placeholder="Search laptops, books, phones…" class="h-10 w-full rounded-xl border border-line bg-canvas pl-9 pr-3 text-sm placeholder:text-ink-3 focus:border-brand-300 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-100">
+        </label>
+      </form>
+      <div class="ml-auto flex items-center gap-1 md:ml-0">
+        {% if user.is_authenticated %}
+          {% if user.is_staff_member %}
+            <a href="{% url 'staff:overview' %}" class="hidden items-center gap-1 rounded-lg px-2 py-2 text-sm font-semibold text-ink-2 hover:bg-canvas sm:flex">{% icon "shield-check" "size-4" %} Staff</a>
+          {% endif %}
+          <a href="{% url 'messaging:inbox' %}" class="relative rounded-lg p-2 text-ink-2 hover:bg-canvas" aria-label="Messages{% if unread_messages %}, {{ unread_messages }} unread{% endif %}">
+            {% icon "message-circle" %}{% if unread_messages %}<span class="absolute -right-0.5 -top-0.5 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-4 text-white">{% if unread_messages > 9 %}9+{% else %}{{ unread_messages }}{% endif %}</span>{% endif %}
+          </a>
+          <a href="{% url 'core:notifications' %}" class="relative rounded-lg p-2 text-ink-2 hover:bg-canvas" aria-label="Notifications{% if unread_notifications %}, {{ unread_notifications }} unread{% endif %}">
+            {% icon "bell" %}{% if unread_notifications %}<span class="absolute -right-0.5 -top-0.5 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-4 text-white">{% if unread_notifications > 9 %}9+{% else %}{{ unread_notifications }}{% endif %}</span>{% endif %}
+          </a>
+          <a href="{% url 'core:sell' %}" class="btn btn-primary btn-sm ml-1 hidden sm:inline-flex">{% icon "plus" "size-4" %} Post</a>
+          <a href="{% url 'accounts:me' %}" class="ml-1 hidden lg:block" aria-label="Your account">{% avatar user.full_name "sm" %}</a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-ghost btn-sm">Log in</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Join free</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container-page mt-4 space-y-2" aria-live="polite">
+      {% for m in messages %}
+        <div class="alert {% if m.tags == 'error' %}alert-danger{% elif m.tags == 'success' %}alert-success{% elif m.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}" role="{% if m.tags == 'error' %}alert{% else %}status{% endif %}">
+          {% if m.tags == 'success' %}{% icon "circle-check" "mt-0.5 size-4 shrink-0" %}{% elif m.tags == 'error' %}{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}{% else %}{% icon "info" "mt-0.5 size-4 shrink-0" %}{% endif %}
+          <div class="font-medium">{{ m }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% if user.is_authenticated and user.is_suspended %}
+    <div class="container-page mt-4"><div class="alert alert-danger" role="alert">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div><strong>Your account is suspended.</strong> You can browse, but can't post or message. Email support@campushub.ug to appeal.</div></div></div>
+  {% endif %}
+
+  <main id="main" class="min-h-[60vh]">{% block content %}{% endblock %}</main>
+
+  <footer class="mt-16 border-t border-line bg-surface pb-24 lg:pb-0">
+    <div class="container-page grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="space-y-3">
+        {% include "includes/logo.html" %}
+        <p class="max-w-xs text-sm text-ink-2">Uganda's campus marketplace. Buy, sell, earn and save with students and businesses near your campus.</p>
+        <p class="text-xs text-ink-3">Prices in Uganda Shillings (UGX). Times in East Africa Time.</p>
+      </div>
+      <div><h3 class="text-sm font-bold">Explore</h3><ul class="mt-3 space-y-2 text-sm">
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'marketplace:browse' %}">Marketplace</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'gigs:browse' %}">Gigs &amp; tasks</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'deals:browse' %}">Campus deals</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'core:services' %}">All services</a></li></ul></div>
+      <div><h3 class="text-sm font-bold">Earn</h3><ul class="mt-3 space-y-2 text-sm">
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'marketplace:create' %}">Sell an item</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'gigs:create' %}">Post a gig</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'deals:business_home' %}">List your business</a></li></ul></div>
+      <div><h3 class="text-sm font-bold">Trust</h3><ul class="mt-3 space-y-2 text-sm">
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'core:safety' %}">Safety centre</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'core:terms' %}">Terms</a></li>
+        <li><a class="text-ink-2 hover:text-brand-700" href="{% url 'core:privacy' %}">Privacy</a></li></ul></div>
+    </div>
+    <div class="border-t border-line"><div class="container-page flex flex-col gap-1 py-4 text-xs text-ink-3 sm:flex-row sm:justify-between">
+      <span>© {% now "Y" %} CampusHub. Made for students in Uganda.</span><span>Support: support@campushub.ug</span>
+    </div></div>
+  </footer>
+
+  {% block tabbar %}
+  {% with p=request.path %}
+  <nav aria-label="Main" class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+    <ul class="mx-auto grid max-w-md grid-cols-5">
+      <li><a href="/" class="flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold {% if p == '/' %}text-brand-600{% else %}text-ink-3{% endif %}" {% if p == '/' %}aria-current="page"{% endif %}>{% icon "house" %}Home</a></li>
+      <li><a href="{% url 'marketplace:browse' %}" class="flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold {% if p|slice:':12' == '/marketplace' %}text-brand-600{% else %}text-ink-3{% endif %}">{% icon "store" %}Market</a></li>
+      <li><a href="{% url 'gigs:browse' %}" class="flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold {% if p|slice:':5' == '/gigs' %}text-brand-600{% else %}text-ink-3{% endif %}">{% icon "briefcase" %}Gigs</a></li>
+      <li><a href="{% url 'deals:browse' %}" class="flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold {% if p|slice:':6' == '/deals' %}text-brand-600{% else %}text-ink-3{% endif %}">{% icon "tag" %}Deals</a></li>
+      <li><a href="{% url 'accounts:me' %}" class="flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold {% if p|slice:':3' == '/me' %}text-brand-600{% else %}text-ink-3{% endif %}">{% icon "user-round" %}Me</a></li>
+    </ul>
+  </nav>
+  {% endwith %}
+  {% endblock %}
+</body>
+</html>

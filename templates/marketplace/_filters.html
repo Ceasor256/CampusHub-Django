@@ -1,0 +1,20 @@
+{# GET form: shareable URLs, works without JS #}
+<form class="mt-4 space-y-4" action="{% url 'marketplace:browse' %}">
+  {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
+  <div class="space-y-1.5"><label for="{{ prefix }}q" class="text-sm font-semibold">Keyword</label><input id="{{ prefix }}q" name="q" value="{{ request.GET.q }}" class="input" placeholder="e.g. calculator"></div>
+  <div class="space-y-1.5"><label for="{{ prefix }}campus" class="text-sm font-semibold">Campus</label>
+    <select id="{{ prefix }}campus" name="campus" class="input"><option value="all">All campuses</option>
+      {% for c in campuses %}<option value="{{ c.slug }}" {% if campus and campus.pk == c.pk %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+  <div class="space-y-1.5"><label for="{{ prefix }}condition" class="text-sm font-semibold">Condition</label>
+    <select id="{{ prefix }}condition" name="condition" class="input"><option value="">Any</option>
+      {% for v, label in conditions %}<option value="{{ v }}" {% if request.GET.condition == v %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <fieldset class="space-y-1.5"><legend class="text-sm font-semibold">Price (UGX)</legend>
+    <div class="flex gap-2"><input name="min" inputmode="numeric" aria-label="Minimum price" placeholder="Min" value="{{ request.GET.min }}" class="input"><input name="max" inputmode="numeric" aria-label="Maximum price" placeholder="Max" value="{{ request.GET.max }}" class="input"></div></fieldset>
+  <div class="space-y-1.5"><label for="{{ prefix }}sort" class="text-sm font-semibold">Sort by</label>
+    <select id="{{ prefix }}sort" name="sort" class="input">
+      <option value="newest">Newest first</option>
+      <option value="price_asc" {% if request.GET.sort == "price_asc" %}selected{% endif %}>Price: low to high</option>
+      <option value="price_desc" {% if request.GET.sort == "price_desc" %}selected{% endif %}>Price: high to low</option>
+    </select></div>
+  <div class="flex gap-2"><button class="btn btn-primary flex-1">Apply</button><a href="?campus=all" class="btn btn-ghost">Reset</a></div>
+</form>

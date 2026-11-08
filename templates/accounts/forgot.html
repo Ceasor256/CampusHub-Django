@@ -1,0 +1,17 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Forgot password{% endblock %}
+{% block heading %}Reset your password{% endblock %}
+{% block subheading %}Enter your account email and we'll send you a reset link.{% endblock %}
+{% block form %}
+{% if sent %}
+  <div class="alert alert-success" role="status">{% icon "circle-check" "mt-0.5 size-4 shrink-0" %}<div class="font-medium">If an account exists for that email, we've sent a reset link. Check your inbox.</div></div>
+{% else %}
+<form method="post" class="space-y-4" novalidate>
+  {% csrf_token %}
+  {% include "includes/form_errors.html" %}
+  {% include "includes/field.html" with field=form.email label="Email" %}
+  <button class="btn btn-primary btn-lg btn-full" data-pending="Sending…">Send reset link</button>
+</form>
+{% endif %}
+{% endblock %}
+{% block below %}<a href="{% url 'accounts:login' %}" class="font-semibold text-brand-600">Back to log in</a>{% endblock %}

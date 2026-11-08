@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{% if listing %}Edit listing{% else %}Sell an item{% endif %}{% endblock %}
+{% block content %}
+<div class="container-page max-w-2xl pb-10">
+  {% if listing %}{% include "includes/widgets.html" with w="header" eyebrow="Marketplace" title="Edit listing" %}
+  {% else %}{% include "includes/widgets.html" with w="header" eyebrow="Marketplace" title="Sell an item" subtitle="Listing is free. Buyers will message you on CampusHub." %}{% endif %}
+  {% if user.is_suspended %}
+    <div class="alert alert-danger">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div>You can't post while your account is suspended.</div></div>
+  {% else %}
+  <form method="post" enctype="multipart/form-data" class="space-y-5" novalidate>
+    {% csrf_token %}
+    {% include "includes/form_errors.html" %}
+    <div class="card space-y-3 p-5">
+      <h2 class="font-bold">Photos</h2>
+      <div id="photo-grid" class="grid grid-cols-3 gap-2 sm:grid-cols-6">
+        {% for img in listing.images.all %}
+          <div data-photo class="relative aspect-square overflow-hidden rounded-xl border border-line bg-canvas">
+            <img src="{{ img.image.url }}" alt="" class="size-full object-cover"><input type="hidden" name="keep" value="{{ img.pk }}">
+            <button type="button" data-remove aria-label="Remove photo" class="absolute right-1 top-1 rounded-full bg-ink/70 p-1 text-white">{% icon "x" "size-3.5" %}</button>
+          </div>
+        {% endfor %}
+      </div>
+      <label class="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-200 bg-brand-50/50 px-4 py-5 text-sm font-semibold text-brand-600 hover:bg-brand-50">
+        {% icon "image-plus" "size-5" %} Add photos
+        <input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple class="sr-only" data-preview="photo-grid" data-note="photo-note" data-max="6">
+      </label>
+      <p id="photo-note" class="text-xs text-ink-3" data-default="Up to 6 photos, JPG/PNG/WebP, 6 MB each. Photos are resized and location data removed.">Up to 6 photos, JPG/PNG/WebP, 6 MB each. Photos are resized and location data removed.</p>
+    </div>
+    <div class="card space-y-5 p-5">
+      <h2 class="font-bold">Details</h2>
+      {% include "includes/field.html" with field=form.title %}
+      <div class="grid gap-5 sm:grid-cols-2">{% include "includes/field.html" with field=form.category %}{% include "includes/field.html" with field=form.condition %}</div>
+      {% include "includes/field.html" with field=form.description %}
+    </div>
+    <div class="card space-y-5 p-5">
+      <h2 class="font-bold">Price &amp; meet-up</h2>
+      <div class="grid gap-5 sm:grid-cols-2">{% include "includes/field.html" with field=form.price_ugx prefix="UGX" %}{% include "includes/field.html" with field=form.campus %}</div>
+      {% include "includes/field.html" with field=form.is_negotiable %}
+      {% include "includes/field.html" with field=form.meetup_note %}
+    </div>
+    <p class="text-xs text-ink-3">By posting you confirm the item is yours to sell and allowed under our community guidelines. No weapons, drugs, alcohol, counterfeit goods, exam papers or stolen items.</p>
+    <button class="btn btn-primary btn-lg btn-full" data-pending="{% if listing %}Saving…{% else %}Publishing…{% endif %}">{% if listing %}Save changes{% else %}Publish listing{% endif %}</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

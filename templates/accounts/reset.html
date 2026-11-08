@@ -1,0 +1,16 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Set a new password{% endblock %}
+{% block heading %}Set a new password{% endblock %}
+{% block subheading %}You'll be signed out of all other devices.{% endblock %}
+{% block form %}
+{% if invalid %}
+  <div class="alert alert-danger" role="alert">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div>This link is invalid, expired or already used. <a href="{% url 'accounts:forgot_password' %}" class="font-semibold underline">Request a new one</a>.</div></div>
+{% else %}
+<form method="post" class="space-y-4" novalidate>
+  {% csrf_token %}
+  {% include "includes/form_errors.html" %}
+  {% include "includes/field.html" with field=form.password %}
+  <button class="btn btn-primary btn-lg btn-full" data-pending="Saving…">Set new password</button>
+</form>
+{% endif %}
+{% endblock %}

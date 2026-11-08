@@ -1,0 +1,69 @@
+{% extends "staff/base.html" %}
+{% block title %}Staff overview{% endblock %}
+{% block heading %}Platform overview{% endblock %}
+{% block subheading %}Last {{ days }} days · calculated live from database records{% endblock %}
+{% block actions %}
+  <a href="?days=7{% if m.include_sample %}&samples=1{% endif %}" class="tab {% if days == 7 %}tab-active{% endif %}">7d</a>
+  <a href="?days=30{% if m.include_sample %}&samples=1{% endif %}" class="tab {% if days == 30 %}tab-active{% endif %}">30d</a>
+  <a href="?days=90{% if m.include_sample %}&samples=1{% endif %}" class="tab {% if days == 90 %}tab-active{% endif %}">90d</a>
+  <a href="?days={{ days }}{% if not m.include_sample %}&samples=1{% endif %}" class="tab">{% if m.include_sample %}Hide sample data{% else %}Include sample data{% endif %}</a>
+{% endblock %}
+{% block staff %}
+{% if m.include_sample %}<div class="alert alert-warning mb-4">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div><strong>Sample data included.</strong> Figures include seeded development records. Don't use them for reporting.</div></div>{% endif %}
+
+<h2 class="mb-2 text-sm font-bold uppercase tracking-wide text-ink-3">Community</h2>
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Registered users</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.users.total|intcomma }}</div><div class="text-xs text-ink-3">+{{ m.users.new }} new</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Active users</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.users.active|intcomma }}</div><div class="text-xs text-ink-3">seen in last {{ days }} days</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Active sellers</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.listings.sellers }}</div><div class="text-xs text-ink-3">{{ m.listings.active }} live listings</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Businesses</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.biz.total }}</div><div class="text-xs text-ink-3">{{ m.biz.verified }} verified · {{ m.biz.pending }} pending</div></div>
+</div>
+
+<h2 class="mb-2 mt-6 text-sm font-bold uppercase tracking-wide text-ink-3">Activity</h2>
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Listings created</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.listings.created }}</div><div class="text-xs text-ink-3">{{ m.listings.sold }} sold</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Gigs posted</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.gigs.posted }}</div><div class="text-xs text-ink-3">{{ m.gigs.completed }} completed · {{ m.gigs.open }} open</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Deal claims</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.biz.claims }}</div><div class="text-xs text-ink-3">{{ m.biz.redeemed }} redeemed · {{ m.biz.live_deals }} live deals</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Open reports</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.open_reports }}</div><a href="{% url 'staff:reports' %}" class="text-xs text-brand-600">Review queue →</a></div>
+</div>
+
+<h2 class="mb-2 mt-6 text-sm font-bold uppercase tracking-wide text-ink-3">Money</h2>
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+  <div class="card p-4"><div class="flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-ink-3">GMV <span class="badge badge-neutral">Self-reported</span></div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.money.gmv|ugx_short }}</div><div class="text-xs text-ink-3">{{ m.money.transactions }} completed transactions</div></div>
+  <div class="card p-4"><div class="flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-ink-3">Revenue collected <span class="badge badge-success">Actual</span></div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.money.collected|ugx }}</div><div class="text-xs text-ink-3">Fees actually collected</div></div>
+  <div class="card p-4"><div class="flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-ink-3">Fees accrued <span class="badge badge-warning">Uncollected</span></div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.money.accrued|ugx }}</div><div class="text-xs text-ink-3">Owed, not yet collected</div></div>
+  <div class="card p-4"><div class="text-xs font-semibold uppercase tracking-wide text-ink-3">Take rate</div><div class="mt-1 text-2xl font-bold tabular-nums">{{ m.money.take_rate|pct }}</div><div class="text-xs text-ink-3">Repeat buyers {{ m.money.repeat_rate|pct }} · Disputes {{ m.gigs.dispute_rate|pct }}</div></div>
+</div>
+<p class="mt-2 text-xs text-ink-3">GMV is the value of sales and gigs users recorded; payment happened outside CampusHub and isn't verified. It is not CampusHub revenue. Operating costs, contribution margin and CAC aren't tracked in the app yet; connect your accounting records to report them.</p>
+
+<div class="card mt-6 p-5">
+  <h2 class="font-bold">Last 14 days</h2>
+  <svg viewBox="0 0 560 150" class="mt-4 h-40 w-full" role="img" aria-label="Daily signups, listings and gigs over the last 14 days">
+    {% for x in m.daily %}
+      <g><title>{{ x.day|date:"j M" }}: {{ x.signups }} signups, {{ x.listings }} listings, {{ x.gigs }} gigs</title>
+        <rect x="{{ x.x_pos }}" y="{{ x.y_gig }}" width="28" height="{{ x.h_g }}" fill="#b9a0f6"/>
+        <rect x="{{ x.x_pos }}" y="{{ x.y_list }}" width="28" height="{{ x.h_l }}" fill="#fbbd2e"/>
+        <rect x="{{ x.x_pos }}" y="{{ x.y_sign }}" width="28" height="{{ x.h_s }}" fill="#6633d1"/>
+        <line x1="{{ x.x_pos }}" x2="{{ x.x_pos|add:28 }}" y1="128.5" y2="128.5" stroke="#e9e5ef"/>
+        <text x="{{ x.label_x }}" y="145" text-anchor="middle" font-size="10" fill="#7a7389">{{ x.day|date:"d" }}</text>
+      </g>
+    {% endfor %}
+  </svg>
+  <div class="mt-3 flex gap-4 text-xs text-ink-2">
+    <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-brand-600"></span> Signups</span>
+    <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-accent-400"></span> Listings</span>
+    <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-brand-300"></span> Gigs</span>
+  </div>
+</div>
+
+<div class="card mt-6 border-dashed p-5">
+  <div class="flex flex-wrap items-center gap-2"><h2 class="font-bold">Planning model</h2><span class="badge badge-warning">Hypothetical, not real data</span></div>
+  <p class="mt-1 text-sm text-ink-2">Illustrative mature single-campus assumptions from the business plan, shown for comparison only.</p>
+  <dl class="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+    <div class="rounded-xl bg-canvas p-3"><dt class="text-ink-3">Monthly GMV</dt><dd class="font-bold">UGX 157.5M</dd></div>
+    <div class="rounded-xl bg-canvas p-3"><dt class="text-ink-3">Monthly revenue</dt><dd class="font-bold">UGX 28.575M</dd></div>
+    <div class="rounded-xl bg-canvas p-3"><dt class="text-ink-3">Operating costs</dt><dd class="font-bold">UGX 14M</dd></div>
+    <div class="rounded-xl bg-canvas p-3"><dt class="text-ink-3">Operating profit (pre-tax)</dt><dd class="font-bold">UGX 14.575M</dd></div>
+  </dl>
+</div>
+{% endblock %}

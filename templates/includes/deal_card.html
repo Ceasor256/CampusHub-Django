@@ -1,0 +1,18 @@
+<a href="{% url 'deals:detail' d.pk %}" class="group relative flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)] transition hover:border-accent-300 hover:shadow-[var(--shadow-pop)]">
+  <div class="flex items-center justify-between gap-2 bg-gradient-to-r from-accent-100 to-accent-50 px-4 py-3">
+    <span class="text-xl font-extrabold tracking-tight text-accent-900">{{ d.discount_label }}</span>
+    <div class="flex gap-1">{% if d.is_sponsored %}<span class="badge badge-neutral" title="Paid placement">Sponsored</span>{% endif %}{% sample_badge d.is_sample %}</div>
+  </div>
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    <h3 class="line-clamp-2 font-semibold group-hover:text-brand-700">{{ d.title }}</h3>
+    <div class="flex flex-wrap items-center gap-1.5 text-sm text-ink-2">{{ d.business.name }} {% if d.business.is_verified %}{% verified_badge %}{% endif %}</div>
+    {% if d.deal_price_ugx is not None %}
+      <div class="text-sm"><span class="font-bold">{{ d.deal_price_ugx|ugx }}</span>{% if d.original_price_ugx is not None %}<span class="ml-2 text-ink-3 line-through">{{ d.original_price_ugx|ugx }}</span>{% endif %}</div>
+    {% endif %}
+    <div class="mt-auto flex flex-wrap justify-between gap-2 pt-1 text-xs text-ink-3">
+      <span>Ends {{ d.ends_at|date:"j M" }}</span>
+      <span>{% if d.campus %}{{ d.campus.name }}{% else %}All campuses{% endif %}</span>
+      {% if d.remaining is not None %}<span class="{% if d.remaining < 20 %}font-semibold text-warning{% endif %}">{{ d.remaining }} left</span>{% endif %}
+    </div>
+  </div>
+</a>

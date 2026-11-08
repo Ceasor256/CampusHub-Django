@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}{{ g.title }}{% endblock %}
+{% block content %}
+<div class="container-page py-6 pb-12">
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm text-ink-3"><a href="{% url 'gigs:browse' %}" class="hover:text-brand-700">Gigs</a> / {{ g.category.name }}</nav>
+  <div class="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
+    <div class="space-y-4">
+      <div class="card p-5 sm:p-6">
+        <div class="flex flex-wrap items-center gap-2 text-sm"><span class="inline-flex items-center gap-1.5 font-semibold text-brand-700">{% icon g.category.icon "size-4" %} {{ g.category.name }}</span>{% status_badge g.status %}{% sample_badge g.is_sample %}</div>
+        <h1 class="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{{ g.title }}</h1>
+        <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-2">
+          <span class="flex items-center gap-1">{% icon "map-pin" "size-4" %} {{ g.get_mode_display }} · {{ g.campus.name }}{% if g.location_note %} · {{ g.location_note }}{% endif %}</span>
+          {% if g.deadline %}<span class="flex items-center gap-1">{% icon "calendar-days" "size-4" %} Due {{ g.deadline|date:"j M Y" }}</span>{% endif %}
+          <span class="flex items-center gap-1">{% icon "clock" "size-4" %} Posted {{ g.created_at|ago }}</span>
+        </div>
+        <p class="mt-5 whitespace-pre-line text-ink-2">{{ g.description }}</p>
+      </div>
+
+      {% if g.status == "cancelled" %}
+        <div class="alert alert-warning">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div><strong>This gig was cancelled.</strong> {{ g.cancel_reason }}</div></div>
+      {% elif g.status != "removed" %}
+        <div class="card p-5">
+          <h2 class="font-bold">Progress</h2>
+          {% if g.status == "disputed" %}
+            <div class="alert alert-warning mt-3">{% icon "triangle-alert" "mt-0.5 size-4 shrink-0" %}<div><strong>In dispute.</strong> A moderator is reviewing this gig.</div></div>
+          {% else %}
+            <ol class="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
+              {% for label in steps %}
+                <li class="flex flex-col items-center gap-1.5">
+                  <span class="grid size-8 place-items-center rounded-full {% if forloop.counter0 <= step %}bg-brand-600 text-white{% else %}bg-canvas text-ink-3 ring-1 ring-line{% endif %}">{% if forloop.counter0 < step or g.status == "completed" %}{% icon "circle-check" "size-4" %}{% else %}{{ forloop.counter }}{% endif %}</span>
+                  <span class="{% if forloop.counter0 <= step %}text-ink{% else %}text-ink-3{% endif %}">{{ label }}</span>
+                </li>
+              {% endfor %}
+            </ol>
+          {% endif %}
+          {% if g.status == "assigned" %}
+            <p class="mt-4 text-sm text-ink-2">{{ g.assignee.full_name }} is doing this for <strong>{% if g.agreed_ugx %}{{ g.agreed_ugx|ugx }}{% else %}{{ g.budget_ugx|ugx }}{% endif %}</strong>. Both people confirm when it's done.
+              {% if g.poster_confirmed_at %} Poster confirmed {{ g.poster_confirmed_at|date:"j M, H:i" }}.{% endif %}
+              {% if g.worker_confirmed_at %} Provider confirmed {{ g.worker_confirmed_at|date:"j M, H:i" }}.{% endif %}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if is_poster or user.can_moderate %}
+        <div class="card p-5">
+          <h2 class="font-bold">Applicants ({{ applications|length }})</h2>
+          {% if not applications %}<p class="mt-2 text-sm text-ink-2">No applications yet. Most gigs get their first applicant within a day.</p>
+          {% else %}
+            <ul class="mt-3 divide-y divide-line">
+              {% for a in applications %}
+                <li class="flex flex-col gap-3 py-4 sm:flex-row sm:items-start">
+                  <a href="{% url 'accounts:profile' a.applicant.pk %}" class="flex shrink-0 items-center gap-3 sm:w-48">{% avatar a.applicant.full_name "sm" %}<div><div class="font-semibold">{{ a.applicant.full_name }}</div><div class="text-xs text-ink-3">{{ a.created_at|ago }}</div></div></a>
+                  <div class="min-w-0 flex-1"><div class="font-bold tabular-nums">{{ a.proposed_ugx|ugx }}</div><p class="mt-1 whitespace-pre-line text-sm text-ink-2">{{ a.message }}</p></div>
+                  <div class="shrink-0">
+                    {% if a.status == "pending" and g.status == "open" and is_poster %}
+                      <form method="post" action="{% url 'gigs:accept' g.pk a.pk %}">{% csrf_token %}<button class="btn btn-primary btn-sm" data-pending="Selecting…">Choose {{ a.applicant.first_name_display }}</button></form>
+                    {% else %}{% status_badge a.status %}{% endif %}
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="space-y-4 lg:sticky lg:top-20 lg:self-start">
+      <div class="card p-5">
+        <div class="text-sm text-ink-3">Budget</div>
+        <div class="text-3xl font-extrabold tabular-nums text-brand-700">{{ g.budget_ugx|ugx }}</div>
+        <div class="mt-1 text-sm text-ink-3">{{ g.applicant_count }} applied</div>
+        <a href="{% url 'accounts:profile' g.poster.pk %}" class="mt-4 flex items-center gap-3 border-t border-line pt-4">{% avatar g.poster.full_name "sm" %}<div><div class="text-sm font-semibold">{{ g.poster.full_name }}</div><div class="text-xs text-ink-3">Posted this gig</div></div></a>
+      </div>
+
+      <div class="card space-y-3 p-5">
+        {% if not user.is_authenticated %}
+          <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="btn btn-primary btn-full">Log in to apply</a>
+        {% elif is_poster or is_assignee %}
+          <h2 class="font-bold">{% if is_poster %}Your gig{% else %}You're doing this gig{% endif %}</h2>
+          {% if g.status == "open" and is_poster %}<p class="text-sm text-ink-2">Review applicants and choose one. Others are notified automatically.</p>{% endif %}
+          {% if g.status == "assigned" %}
+            {% if i_confirmed %}<div class="alert alert-info">{% icon "info" "mt-0.5 size-4 shrink-0" %}<div>You've confirmed. Waiting for the other person.</div></div>
+            {% else %}<form method="post" action="{% url 'gigs:confirm' g.pk %}">{% csrf_token %}<button class="btn btn-primary btn-full" data-pending="Confirming…">{% if is_poster %}Confirm the work is done{% else %}I've finished the work{% endif %}</button></form>{% endif %}
+          {% endif %}
+          {% if g.status == "completed" %}
+            {% if has_reviewed %}<div class="alert alert-success">{% icon "circle-check" "mt-0.5 size-4 shrink-0" %}<div>Completed &amp; reviewed. Thank you!</div></div>
+            {% else %}
+              <form method="post" action="{% url 'gigs:review' g.pk %}" class="space-y-3">{% csrf_token %}
+                <fieldset><legend class="text-sm font-semibold">How was working with {% if is_poster %}{{ g.assignee.first_name_display }}{% else %}{{ g.poster.first_name_display }}{% endif %}?</legend>
+                  <div class="mt-2 flex gap-1.5">{% for n in "12345" %}<label class="cursor-pointer"><input type="radio" name="rating" value="{{ n }}" class="peer sr-only" required><span class="flex items-center gap-1 rounded-lg border border-line px-2.5 py-1.5 text-sm font-semibold text-ink-2 peer-checked:border-accent-500 peer-checked:bg-accent-100 peer-checked:text-accent-900 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300">{{ n }} {% icon "star" "size-4" %}</span></label>{% endfor %}</div>
+                </fieldset>
+                <textarea name="comment" rows="2" maxlength="500" class="input" placeholder="Optional comment" aria-label="Comment"></textarea>
+                <button class="btn btn-primary btn-sm">Submit review</button>
+              </form>
+            {% endif %}
+          {% endif %}
+          <div class="flex flex-wrap gap-2">
+            {% if is_poster and g.status == "open" or is_poster and g.status == "assigned" and not g.worker_confirmed_at %}
+              <button type="button" class="btn btn-ghost btn-sm" data-dialog-open="cancel-dialog">Cancel gig</button>
+              <dialog id="cancel-dialog" class="modal"><form method="post" action="{% url 'gigs:cancel' g.pk %}" class="space-y-4 p-5">{% csrf_token %}
+                <h2 class="text-lg font-bold">Cancel this gig?</h2>
+                <div class="space-y-1.5"><label for="reason" class="text-sm font-semibold">Reason (shared with applicants)</label><textarea id="reason" name="reason" rows="3" maxlength="300" class="input"></textarea></div>
+                <div class="flex justify-end gap-2"><button type="button" data-dialog-close class="btn btn-secondary">Keep gig</button><button class="btn btn-danger">Cancel gig</button></div></form></dialog>
+            {% endif %}
+            {% if g.status == "assigned" %}
+              <button type="button" class="btn btn-ghost btn-sm text-danger" data-dialog-open="dispute-dialog">Open a dispute</button>
+              <dialog id="dispute-dialog" class="modal"><form method="post" action="{% url 'gigs:dispute' g.pk %}" class="space-y-4 p-5">{% csrf_token %}
+                <h2 class="text-lg font-bold">Report a problem with this gig</h2>
+                <div class="space-y-1.5"><label for="details" class="text-sm font-semibold">What went wrong?</label><textarea id="details" name="details" rows="4" minlength="10" maxlength="1000" required class="input"></textarea>
+                  <p class="text-xs text-ink-3">A moderator will review the gig and your messages and contact you both. Payments made outside CampusHub can't be reversed by us.</p></div>
+                <div class="flex justify-end gap-2"><button type="button" data-dialog-close class="btn btn-secondary">Back</button><button class="btn btn-danger">Open dispute</button></div></form></dialog>
+            {% endif %}
+          </div>
+        {% elif my_app %}
+          <h2 class="font-bold">Your application</h2>
+          <div class="flex items-center justify-between"><span class="text-sm">{{ my_app.proposed_ugx|ugx }}</span>{% status_badge my_app.status %}</div>
+          {% if my_app.status == "pending" %}<form method="post" action="{% url 'gigs:withdraw' g.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm">Withdraw application</button></form>{% endif %}
+        {% elif g.status == "open" %}
+          <h2 class="font-bold">Apply for this gig</h2>
+          <form method="post" action="{% url 'gigs:apply' g.pk %}" class="space-y-4" novalidate>{% csrf_token %}
+            {% include "includes/form_errors.html" with form=apply_form %}
+            {% include "includes/field.html" with field=apply_form.message %}
+            {% include "includes/field.html" with field=apply_form.proposed_ugx prefix="UGX" %}
+            <button class="btn btn-primary btn-full" data-pending="Sending…">Send application</button>
+          </form>
+        {% else %}
+          <p class="text-sm text-ink-2">This gig is no longer taking applications.</p>
+        {% endif %}
+      </div>
+
+      {% if user.is_authenticated and g.status != "open" and g.assignee %}{% if is_poster or is_assignee %}
+        <div class="card p-5">
+          <h2 class="mb-3 font-bold">Message {% if is_poster %}{{ g.assignee.first_name_display }}{% else %}{{ g.poster.first_name_display }}{% endif %}</h2>
+          <form method="post" action="{% url 'messaging:start' %}" class="space-y-3">{% csrf_token %}
+            <input type="hidden" name="recipient" value="{% if is_poster %}{{ g.assignee.pk }}{% else %}{{ g.poster.pk }}{% endif %}"><input type="hidden" name="gig" value="{{ g.pk }}">
+            <textarea name="body" rows="3" maxlength="2000" required class="input" placeholder="Agree on time, place and details…" aria-label="Message"></textarea>
+            <button class="btn btn-primary btn-full">{% icon "send" "size-4" %} Send message</button>
+          </form>
+        </div>
+      {% endif %}{% endif %}
+      {% if user.is_authenticated and not is_poster and not is_assignee and g.status == "open" %}
+        <div class="card p-5">
+          <h2 class="mb-3 font-bold">Have a question first?</h2>
+          <form method="post" action="{% url 'messaging:start' %}" class="space-y-3">{% csrf_token %}
+            <input type="hidden" name="recipient" value="{{ g.poster.pk }}"><input type="hidden" name="gig" value="{{ g.pk }}">
+            <textarea name="body" rows="3" maxlength="2000" required class="input" placeholder="Ask the poster a question…" aria-label="Message"></textarea>
+            <button class="btn btn-secondary btn-full">{% icon "send" "size-4" %} Send message</button>
+          </form>
+        </div>
+      {% endif %}
+      {% if not is_poster %}<div class="flex justify-end">{% include "includes/widgets.html" with w="report" target_type="gig" target_id=g.pk label="Report gig" %}</div>{% endif %}
+      {% if user.is_authenticated and user.can_moderate and g.status != "removed" %}{% include "staff/_remove.html" with kind="gig" obj_id=g.pk %}{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

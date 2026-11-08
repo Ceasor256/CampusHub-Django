@@ -1,0 +1,5 @@
+{% include "includes/form_errors.html" %}
+<div class="grid gap-5 sm:grid-cols-2">{% include "includes/field.html" with field=form.name %}{% include "includes/field.html" with field=form.kind %}</div>
+{% include "includes/field.html" with field=form.description %}
+{% include "includes/field.html" with field=form.address %}
+<div class="grid gap-5 sm:grid-cols-2">{% include "includes/field.html" with field=form.phone %}{% include "includes/field.html" with field=form.email %}</div>

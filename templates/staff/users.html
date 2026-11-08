@@ -1,0 +1,44 @@
+{% extends "staff/base.html" %}
+{% block title %}Users{% endblock %}
+{% block heading %}Users{% endblock %}
+{% block subheading %}{{ page.paginator.count }} accounts{% endblock %}
+{% block staff %}
+<form class="mb-4 flex flex-wrap gap-2">
+  <input name="q" value="{{ request.GET.q }}" placeholder="Name, email or phone" aria-label="Search users" class="input max-w-xs">
+  <select name="status" aria-label="Status" class="input max-w-40"><option value="">All statuses</option>
+    <option value="active" {% if request.GET.status == "active" %}selected{% endif %}>Active</option><option value="suspended" {% if request.GET.status == "suspended" %}selected{% endif %}>Suspended</option><option value="deleted" {% if request.GET.status == "deleted" %}selected{% endif %}>Deleted</option></select>
+  <button class="btn btn-primary">Search</button>
+</form>
+<div class="card overflow-x-auto">
+  <table class="table min-w-[46rem]">
+    <thead><tr><th class="pl-4">User</th><th>Status</th><th>Verification</th><th>Joined</th><th class="text-right">Actions</th></tr></thead>
+    <tbody>
+      {% for u in page.object_list %}
+        <tr>
+          <td class="pl-4"><a href="{% url 'accounts:profile' u.pk %}" class="font-semibold hover:text-brand-700">{{ u.full_name }}</a><div class="text-xs text-ink-3">{{ u.email }}</div>{% if u.phone %}<div class="text-xs text-ink-3">{{ u.phone }}</div>{% endif %}
+            <div class="mt-1 flex gap-1">{% for r in u.staff_roles.all %}<span class="badge badge-brand">{{ r.role }}</span>{% endfor %}</div></td>
+          <td>{% status_badge u.status %}</td>
+          <td class="text-xs"><div>{% if u.email_verified_at %}✓ Email{% else %}Email unverified{% endif %}</div><div>{% if u.student_verified_at %}✓ Student{% else %}Student unverified{% endif %}</div></td>
+          <td class="text-xs text-ink-3">{{ u.date_joined|date:"j M Y" }}</td>
+          <td>
+            {% if u.pk != user.pk and u.status != "deleted" %}
+              <div class="flex flex-wrap justify-end gap-1">
+                {% if user.can_moderate %}
+                  <form method="post" action="{% url 'staff:act' 'student_verify' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ u.pk }}"><input type="hidden" name="verified" value="{% if u.student_verified_at %}0{% else %}1{% endif %}"><button class="btn btn-ghost btn-sm">{% if u.student_verified_at %}Unverify student{% else %}Verify student{% endif %}</button></form>
+                  {% if u.status == "active" %}{% with "su-"|add:u.pk.hex as d %}{% include "staff/_confirm.html" with op="suspend_user" id=u.pk dlg=d label="Suspend" title="Suspend this user?" body="They'll be signed out and unable to post or message." reason=True danger=True confirm="Suspend" %}{% endwith %}
+                  {% else %}<form method="post" action="{% url 'staff:act' 'restore_user' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ u.pk }}"><button class="btn btn-secondary btn-sm">Restore</button></form>{% endif %}
+                {% endif %}
+                {% if user.is_platform_admin %}
+                  <form method="post" action="{% url 'staff:act' 'set_role' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ u.pk }}"><input type="hidden" name="role" value="moderator"><input type="hidden" name="grant" value="{% if 'moderator' in u.roles %}0{% else %}1{% endif %}"><button class="btn btn-ghost btn-sm">{% if 'moderator' in u.roles %}− moderator{% else %}+ moderator{% endif %}</button></form>
+                  {% with "ad-"|add:u.pk.hex as d %}{% if 'admin' in u.roles %}{% include "staff/_confirm.html" with op="set_role" id=u.pk dlg=d label="− admin" title="Remove admin role?" k1="role" v1="admin" k2="grant" v2="0" danger=True %}{% else %}{% include "staff/_confirm.html" with op="set_role" id=u.pk dlg=d label="+ admin" title="Grant admin role?" body="Admins can change fees, roles and campuses. Only grant to trusted staff." k1="role" v1="admin" k2="grant" v2="1" %}{% endif %}{% endwith %}
+                {% endif %}
+              </div>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "includes/widgets.html" with w="pagination" %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "staff/base.html" %}
+{% block title %}Categories{% endblock %}
+{% block heading %}Categories{% endblock %}
+{% block subheading %}Deactivated categories disappear from forms and filters; existing posts keep them.{% endblock %}
+{% block staff %}
+<div class="grid gap-6 lg:grid-cols-2">
+  {% regroup cats by get_module_display as groups %}
+  {% for g in groups %}
+    <div class="card p-4"><h2 class="mb-2 font-bold">{{ g.grouper }}</h2>
+      <ul class="divide-y divide-line">
+        {% for c in g.list %}
+          <li class="flex items-center justify-between gap-2 py-2 text-sm">
+            <span class="flex items-center gap-2"><span class="text-brand-600">{% icon c.icon "size-4" %}</span> {{ c.name }}</span>
+            <span class="flex items-center gap-2">{% if not c.is_active %}{% status_badge "paused" "Inactive" %}{% endif %}
+              {% if user.is_platform_admin %}<form method="post" action="{% url 'staff:act' 'category_active' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ c.pk }}"><input type="hidden" name="active" value="{% if c.is_active %}0{% else %}1{% endif %}"><button class="btn btn-ghost btn-sm">{% if c.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}</span>
+          </li>
+        {% endfor %}
+      </ul></div>
+  {% endfor %}
+</div>
+{% if user.is_platform_admin %}
+<div class="card mt-6 p-5"><h2 class="mb-3 font-bold">Add a category</h2>
+  <form method="post" action="{% url 'staff:act' 'create_category' %}" class="space-y-3">{% csrf_token %}
+    <div class="grid gap-3 sm:grid-cols-3">
+      <div class="space-y-1.5"><label class="text-sm font-semibold" for="cat-mod">Module</label><select id="cat-mod" name="module" class="input"><option value="marketplace">Marketplace</option><option value="gigs">Gigs</option></select></div>
+      <div class="space-y-1.5"><label class="text-sm font-semibold" for="cat-name">Name</label><input id="cat-name" name="name" required class="input"></div>
+      <div class="space-y-1.5"><label class="text-sm font-semibold" for="cat-icon">Icon</label><select id="cat-icon" name="icon" class="input">{% for i in icons %}<option {% if i == "package" %}selected{% endif %}>{{ i }}</option>{% endfor %}</select></div>
+    </div>
+    <button class="btn btn-primary btn-sm">Add category</button>
+  </form></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block tabbar %}{% endblock %}
+{% block content %}
+<div class="container-page grid gap-6 py-6 lg:grid-cols-[13rem_1fr]">
+  <aside class="lg:sticky lg:top-20 lg:self-start">
+    <div class="mb-3 flex flex-wrap items-center gap-2 px-1"><span class="text-sm font-bold">Staff</span>{% for r in user.roles %}<span class="badge badge-brand">{{ r }}</span>{% endfor %}</div>
+    <nav aria-label="Staff" class="scrollbar-none -mx-4 flex gap-1 overflow-x-auto px-4 lg:mx-0 lg:flex-col lg:px-0">
+      {% with p=request.path %}
+      <a href="{% url 'staff:overview' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if p == '/staff/' %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Overview</a>
+      <a href="{% url 'staff:reports' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/reports' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Reports &amp; disputes</a>
+      <a href="{% url 'staff:users' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/users' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Users</a>
+      <a href="{% url 'staff:businesses' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/businesses' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Businesses</a>
+      <a href="{% url 'staff:deals' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/deals' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Deals</a>
+      <a href="{% url 'staff:transactions' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/transactions' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Transactions</a>
+      <a href="{% url 'staff:campuses' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/campuses' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Campuses</a>
+      <a href="{% url 'staff:categories' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/categories' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Categories</a>
+      {% if user.is_platform_admin %}
+        <a href="{% url 'staff:settings' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/settings' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Fees &amp; settings</a>
+        <a href="{% url 'staff:audit' %}" class="shrink-0 rounded-lg px-3 py-2 text-sm font-semibold {% if '/staff/audit' in p %}bg-ink text-white{% else %}text-ink-2 hover:bg-surface{% endif %}">Audit log</a>
+      {% endif %}
+      {% endwith %}
+    </nav>
+  </aside>
+  <div class="min-w-0 pb-12">
+    <div class="flex flex-col gap-3 pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <div><h1 class="text-2xl font-bold tracking-tight">{% block heading %}{% endblock %}</h1><p class="mt-1 text-ink-2">{% block subheading %}{% endblock %}</p></div>
+      <div class="flex flex-wrap gap-1">{% block actions %}{% endblock %}</div>
+    </div>
+    {% block staff %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

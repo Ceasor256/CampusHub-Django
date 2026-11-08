@@ -1,0 +1,18 @@
+{% comment %}
+Confirm-before-submit button for staff actions.
+  include "staff/_confirm.html" with op="resolve_report" id=r.pk dlg="dismiss-x" label="Dismiss" title="Dismiss report?" extra="outcome=dismiss" note=True danger=False
+`extra` is a single "key=value" hidden field; `note`/`reason` add a textarea.
+{% endcomment %}
+<button type="button" class="btn btn-sm {% if danger %}btn-danger{% elif primary %}btn-primary{% else %}btn-secondary{% endif %}" data-dialog-open="{{ dlg }}">{{ label }}</button>
+<dialog id="{{ dlg }}" class="modal">
+  <form method="post" action="{% url 'staff:act' op %}" class="space-y-4 p-5">{% csrf_token %}
+    <input type="hidden" name="id" value="{{ id }}">
+    {% if k1 %}<input type="hidden" name="{{ k1 }}" value="{{ v1 }}">{% endif %}
+    {% if k2 %}<input type="hidden" name="{{ k2 }}" value="{{ v2 }}">{% endif %}
+    <h2 class="text-lg font-bold">{{ title }}</h2>
+    {% if body %}<p class="text-sm text-ink-2">{{ body }}</p>{% endif %}
+    {% if note %}<textarea name="note" rows="2" class="input" placeholder="Note for the record" aria-label="Note"></textarea>{% endif %}
+    {% if reason %}<textarea name="reason" rows="2" required minlength="5" class="input" placeholder="Reason (recorded in audit log)" aria-label="Reason"></textarea>{% endif %}
+    <div class="flex justify-end gap-2"><button type="button" data-dialog-close class="btn btn-secondary">Cancel</button><button class="btn {% if danger %}btn-danger{% else %}btn-primary{% endif %}">{{ confirm|default:"Confirm" }}</button></div>
+  </form>
+</dialog>

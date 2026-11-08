@@ -1,0 +1,28 @@
+{% extends "staff/base.html" %}
+{% block title %}Transactions{% endblock %}
+{% block heading %}Transactions{% endblock %}
+{% block subheading %}Sales and completed gigs. Payment state is tracked separately from the transaction itself.{% endblock %}
+{% block staff %}
+<div class="mb-4 flex gap-1"><a href="?" class="tab {% if not module %}tab-active{% endif %}">All</a><a href="?module=marketplace" class="tab {% if module == 'marketplace' %}tab-active{% endif %}">Marketplace</a><a href="?module=gigs" class="tab {% if module == 'gigs' %}tab-active{% endif %}">Gigs</a></div>
+{% if not page.object_list %}{% include "includes/widgets.html" with w="empty" title="No transactions yet" %}{% else %}
+<div class="card overflow-x-auto">
+  <table class="table min-w-[48rem]">
+    <thead><tr><th class="pl-4">When</th><th>Module</th><th>Seller / provider</th><th class="text-right">Amount</th><th class="text-right">Platform fee</th><th>Status</th><th>Payment</th></tr></thead>
+    <tbody>
+      {% for t in page.object_list %}
+        <tr>
+          <td class="pl-4 text-xs text-ink-3">{{ t.created_at|date:"j M Y, H:i" }}</td>
+          <td><a href="{% if t.reference_type == 'listing' %}{% url 'marketplace:detail' t.reference_id %}{% else %}{% url 'gigs:detail' t.reference_id %}{% endif %}" class="font-semibold hover:text-brand-700">{{ t.get_module_display }}</a>
+            <div class="flex gap-1">{% if t.is_sample %}<span class="badge badge-warning">Sample</span>{% endif %}{% if t.is_test %}<span class="badge badge-warning">TEST</span>{% endif %}</div></td>
+          <td>{{ t.seller.full_name }}</td>
+          <td class="text-right tabular-nums">{{ t.amount_ugx|ugx }}</td>
+          <td class="text-right tabular-nums">{{ t.fee_ugx|ugx }}<div class="text-xs text-ink-3">{{ t.fee_rate_bps|percent_bps }} · {{ t.get_fee_status_display|lower }}</div></td>
+          <td>{% status_badge t.status %}</td><td>{% status_badge t.payment_status %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "includes/widgets.html" with w="pagination" %}
+{% endif %}
+{% endblock %}

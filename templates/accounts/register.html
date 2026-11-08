@@ -1,0 +1,21 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Create account{% endblock %}
+{% block heading %}Join CampusHub{% endblock %}
+{% block subheading %}One free account to buy, sell, earn from gigs and claim student deals.{% endblock %}
+{% block form %}
+<form method="post" class="space-y-4" novalidate>
+  {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+  {% include "includes/form_errors.html" %}
+  {% include "includes/field.html" with field=form.full_name %}
+  {% include "includes/field.html" with field=form.email %}
+  {% include "includes/field.html" with field=form.phone %}
+  {% include "includes/field.html" with field=form.password %}
+  <div>
+    <label class="flex items-start gap-2 text-sm text-ink-2"><input type="checkbox" name="agree" class="mt-0.5 size-4 accent-brand-600" {% if form.agree.value %}checked{% endif %}>
+      <span>I agree to the <a href="{% url 'core:terms' %}" target="_blank" class="font-semibold text-brand-600">Terms</a> and <a href="{% url 'core:privacy' %}" target="_blank" class="font-semibold text-brand-600">Privacy Policy</a>.</span></label>
+    {% if form.agree.errors %}<p class="mt-1 text-sm text-danger">{{ form.agree.errors|first }}</p>{% endif %}
+  </div>
+  <button class="btn btn-primary btn-lg btn-full" data-pending="Creating account…">Create account</button>
+</form>
+{% endblock %}
+{% block below %}Already have an account? <a href="{% url 'accounts:login' %}?next={{ next|urlencode }}" class="font-semibold text-brand-600">Log in</a>{% endblock %}

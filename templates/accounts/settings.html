@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="container-page max-w-2xl space-y-6 pb-12">
+  {% include "includes/widgets.html" with w="header" title="Settings" subtitle="Signed in as "|add:user.email %}
+  <div class="card p-5 sm:p-6">
+    <h2 class="mb-4 font-bold">Profile</h2>
+    <form method="post" class="space-y-4" novalidate>{% csrf_token %}
+      {% include "includes/form_errors.html" %}
+      {% include "includes/field.html" with field=form.full_name %}
+      {% include "includes/field.html" with field=form.campus %}
+      {% include "includes/field.html" with field=form.phone %}
+      {% include "includes/field.html" with field=form.bio %}
+      <button class="btn btn-primary" data-pending="Saving…">Save profile</button>
+    </form>
+  </div>
+  <div class="card p-5 sm:p-6">
+    <h2 class="font-bold">Password</h2>
+    <p class="mt-1 text-sm text-ink-2">To change your password, use <a href="{% url 'accounts:forgot_password' %}" class="font-semibold text-brand-600">reset password</a>. You'll get a secure link by email and other devices will be signed out.</p>
+  </div>
+  <div class="card border-danger/30 p-5 sm:p-6">
+    <h2 class="mb-2 font-bold text-danger">Delete account</h2>
+    <p class="text-sm text-ink-2">This removes your name, email, phone and bio, takes down your active listings and cancels your open gigs. Records of completed transactions and moderation history are kept in anonymised form for safety and accounting.</p>
+    <form method="post" action="{% url 'accounts:delete_account' %}" class="mt-4 space-y-4" novalidate>{% csrf_token %}
+      {% include "includes/form_errors.html" with form=delete_form %}
+      {% include "includes/field.html" with field=delete_form.password label="Password" %}
+      {% include "includes/field.html" with field=delete_form.confirm %}
+      <button class="btn btn-danger" data-pending="Deleting…">Permanently delete my account</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

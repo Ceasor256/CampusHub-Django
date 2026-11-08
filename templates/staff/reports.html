@@ -1,0 +1,54 @@
+{% extends "staff/base.html" %}
+{% block title %}Reports{% endblock %}
+{% block heading %}Reports &amp; disputes{% endblock %}
+{% block subheading %}{{ rows|length }} {{ status }} report{{ rows|length|pluralize }}{% endblock %}
+{% block staff %}
+{% if disputes %}
+  <div class="card mb-6 p-5">
+    <h2 class="font-bold">Gig disputes ({{ disputes|length }})</h2>
+    <ul class="mt-3 divide-y divide-line">
+      {% for g in disputes %}
+        <li class="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div><a href="{% url 'gigs:detail' g.pk %}" class="font-semibold hover:text-brand-700">{{ g.title }}</a><div class="text-xs text-ink-3">Disputed {{ g.updated_at|ago }}</div></div>
+          {% if user.can_moderate %}<div class="flex gap-2">
+            {% with "dc-"|add:g.pk.hex as d1 %}{% include "staff/_confirm.html" with op="resolve_dispute" id=g.pk dlg=d1 label="Mark completed" title="Resolve as completed?" body="Both parties are notified and the gig counts as completed." k1="outcome" v1="completed" note=True primary=True %}{% endwith %}
+            {% with "dx-"|add:g.pk.hex as d2 %}{% include "staff/_confirm.html" with op="resolve_dispute" id=g.pk dlg=d2 label="Cancel gig" title="Resolve as cancelled?" k1="outcome" v1="cancelled" note=True danger=True %}{% endwith %}
+          </div>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+<div class="mb-4 flex gap-1">
+  <a href="?status=open" class="tab {% if status == 'open' %}tab-active{% endif %}">Open</a>
+  <a href="?status=actioned" class="tab {% if status == 'actioned' %}tab-active{% endif %}">Actioned</a>
+  <a href="?status=dismissed" class="tab {% if status == 'dismissed' %}tab-active{% endif %}">Dismissed</a>
+</div>
+{% if not rows %}
+  {% if status == "open" %}{% include "includes/widgets.html" with w="empty" title="Queue is clear 🎉" %}{% else %}{% include "includes/widgets.html" with w="empty" title="Nothing here" %}{% endif %}
+{% else %}
+  <div class="space-y-3">
+    {% for row in rows %}{% with r=row.r t=row.target %}
+      <div class="card p-4">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2"><span class="badge badge-danger">{{ r.get_reason_display }}</span><span class="badge badge-neutral">{{ r.target_type }}</span>{% if t.status %}{% status_badge t.status %}{% endif %}</div>
+            <div class="mt-1.5 font-semibold">{% if t.href %}<a href="{{ t.href }}" target="_blank" rel="noopener" class="hover:text-brand-700">{{ t.label }}</a>{% else %}{{ t.label }}{% endif %}</div>
+            {% if r.details %}<p class="mt-1 whitespace-pre-line text-sm text-ink-2">{{ r.details }}</p>{% endif %}
+            <div class="mt-1 text-xs text-ink-3">Reported by {{ r.reporter.full_name }} · {{ r.created_at|date:"j M Y, H:i" }}{% if r.resolved_at %} · Resolved {{ r.resolved_at|date:"j M Y, H:i" }} by {{ r.resolved_by.full_name }}{% endif %}</div>
+            {% if r.resolution_note %}<div class="mt-1 text-xs text-ink-2">Note: {{ r.resolution_note }}</div>{% endif %}
+          </div>
+          {% if status == "open" and user.can_moderate %}
+            <div class="flex shrink-0 flex-wrap gap-2">
+              {% with "rd-"|add:r.pk.hex as a %}{% include "staff/_confirm.html" with op="resolve_report" id=r.pk dlg=a label="Dismiss" title="Dismiss report?" body="No action is taken against the content." k1="outcome" v1="dismiss" note=True %}{% endwith %}
+              {% if r.target_type != "user" %}{% with "rr-"|add:r.pk.hex as b %}{% include "staff/_confirm.html" with op="resolve_report" id=r.pk dlg=b label="Remove" title="Remove content?" body="The content is hidden and its owner notified." k1="outcome" v1="remove" note=True danger=True %}{% endwith %}{% endif %}
+              {% with "rs-"|add:r.pk.hex as c %}{% include "staff/_confirm.html" with op="resolve_report" id=r.pk dlg=c label="Remove + suspend" title="Remove and suspend the owner?" body="The owner is signed out everywhere and can't post until restored." k1="outcome" v1="remove_and_suspend" note=True danger=True %}{% endwith %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endwith %}{% endfor %}
+  </div>
+{% endif %}
+{% if not user.can_moderate %}<p class="mt-4 text-sm text-ink-3">Support staff can view reports; moderators and admins resolve them.</p>{% endif %}
+{% endblock %}

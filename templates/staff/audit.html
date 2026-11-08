@@ -1,0 +1,19 @@
+{% extends "staff/base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block heading %}Audit log{% endblock %}
+{% block subheading %}Append-only record of privileged and security-relevant actions (latest 100).{% endblock %}
+{% block staff %}
+{% if not rows %}{% include "includes/widgets.html" with w="empty" title="No entries yet" %}{% else %}
+<div class="card overflow-x-auto">
+  <table class="table min-w-[44rem]">
+    <thead><tr><th class="pl-4">When</th><th>Who</th><th>Action</th><th>Target</th><th>Details</th></tr></thead>
+    <tbody>
+      {% for a in rows %}
+        <tr><td class="whitespace-nowrap pl-4 text-xs text-ink-3">{{ a.created_at|date:"j M Y, H:i" }}</td><td>{% if a.actor %}{{ a.actor.full_name }}{% else %}system{% endif %}</td>
+          <td class="font-mono text-xs">{{ a.action }}</td><td class="font-mono text-xs text-ink-3">{{ a.target_type }}{% if a.target_id %}:{{ a.target_id|slice:":8" }}{% endif %}</td>
+          <td class="max-w-xs truncate font-mono text-xs text-ink-3" title="{{ a.metadata }}">{% if a.metadata %}{{ a.metadata }}{% endif %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>{% endif %}
+{% endblock %}

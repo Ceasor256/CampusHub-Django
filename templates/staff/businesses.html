@@ -1,0 +1,25 @@
+{% extends "staff/base.html" %}
+{% block title %}Businesses{% endblock %}
+{% block heading %}Businesses{% endblock %}
+{% block subheading %}Verification requests appear first.{% endblock %}
+{% block staff %}
+<div class="mb-4 flex flex-wrap gap-1">{% for f in filters %}<a href="?v={{ f }}" class="tab {% if v == f %}tab-active{% endif %}">{% if f %}{{ f|capfirst }}{% else %}All{% endif %}</a>{% endfor %}</div>
+{% if not rows %}{% include "includes/widgets.html" with w="empty" title="No businesses" %}{% else %}
+<div class="space-y-3">
+  {% for b in rows %}
+    <div class="card p-4"><div class="flex flex-col gap-3 sm:flex-row sm:justify-between">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2"><a href="{% url 'deals:business_public' b.slug %}" class="font-semibold hover:text-brand-700">{{ b.name }}</a>{% status_badge b.verification %}{% if b.status == "suspended" %}{% status_badge "suspended" %}{% endif %}{% sample_badge b.is_sample %}</div>
+        <div class="text-sm text-ink-3">{{ b.kind }} · {{ b.address }} · {{ b.phone|phone }}</div>
+        <div class="text-xs text-ink-3">Owner: {{ b.owner.full_name }} ({{ b.owner.email }}) · Created {{ b.created_at|date:"j M Y" }}</div>
+        {% if b.verification_note %}<p class="mt-2 rounded-lg bg-canvas p-2 text-sm text-ink-2">Note: {{ b.verification_note }}</p>{% endif %}
+      </div>
+      {% if user.can_moderate %}<div class="flex shrink-0 flex-wrap gap-2">
+        {% if b.verification != "verified" %}{% with "bv-"|add:b.pk.hex as d %}{% include "staff/_confirm.html" with op="business_verify" id=b.pk dlg=d label="Verify" title="Verify this business?" body="Only verify after checking registration documents or visiting the premises." k1="decision" v1="verified" note=True primary=True %}{% endwith %}{% endif %}
+        {% if b.verification == "pending" %}{% with "br-"|add:b.pk.hex as d %}{% include "staff/_confirm.html" with op="business_verify" id=b.pk dlg=d label="Reject" title="Reject verification?" k1="decision" v1="rejected" note=True danger=True %}{% endwith %}{% endif %}
+        <form method="post" action="{% url 'staff:act' 'business_suspend' %}">{% csrf_token %}<input type="hidden" name="id" value="{{ b.pk }}"><input type="hidden" name="suspended" value="{% if b.status == 'suspended' %}0{% else %}1{% endif %}"><button class="btn btn-ghost btn-sm">{% if b.status == "suspended" %}Restore{% else %}Suspend{% endif %}</button></form>
+      </div>{% endif %}
+    </div></div>
+  {% endfor %}
+</div>{% endif %}
+{% endblock %}

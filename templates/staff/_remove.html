@@ -1,0 +1,12 @@
+<div class="card border-danger/30 p-4">
+  <button type="button" class="btn btn-danger btn-sm" data-dialog-open="remove-{{ obj_id }}">Moderator: remove {{ kind }}</button>
+  <dialog id="remove-{{ obj_id }}" class="modal">
+    <form method="post" action="{% url 'staff:act' 'remove_content' %}" class="space-y-4 p-5">{% csrf_token %}
+      <input type="hidden" name="kind" value="{{ kind }}"><input type="hidden" name="id" value="{{ obj_id }}">
+      <h2 class="text-lg font-bold">Remove this {{ kind }}?</h2>
+      <p class="text-sm text-ink-2">It will be hidden from everyone. This is recorded in the audit log.</p>
+      <textarea name="reason" rows="2" required minlength="5" class="input" placeholder="Reason (recorded in audit log)" aria-label="Reason"></textarea>
+      <div class="flex justify-end gap-2"><button type="button" data-dialog-close class="btn btn-secondary">Cancel</button><button class="btn btn-danger">Remove</button></div>
+    </form>
+  </dialog>
+</div>

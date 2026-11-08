@@ -1,0 +1,16 @@
+{# One form field: label, widget, then error or hint. Usage: include "includes/field.html" with field=form.x #}
+{% if field.field.widget.input_type == "checkbox" %}
+  <div>
+    <label class="flex items-start gap-2 text-sm font-medium" for="{{ field.auto_id }}">
+      <input type="checkbox" name="{{ field.html_name }}" id="{{ field.auto_id }}" class="mt-0.5 size-4 accent-brand-600" {% if field.value %}checked{% endif %}>
+      <span>{% if label %}{{ label }}{% else %}{{ field.label }}{% endif %}</span>
+    </label>
+    {% if field.errors %}<p id="{{ field.auto_id }}-error" class="mt-1 text-sm text-danger">{{ field.errors|first }}</p>{% endif %}
+  </div>
+{% else %}
+  <div class="space-y-1.5">
+    <label for="{{ field.auto_id }}" class="block text-sm font-semibold text-ink">{% if label %}{{ label }}{% else %}{{ field.label }}{% endif %}{% if not field.field.required %} <span class="font-normal text-ink-3">(optional)</span>{% endif %}</label>
+    {% if prefix %}<div class="relative [&>input]:pl-12"><span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-ink-3">{{ prefix }}</span>{{ field|widget }}</div>{% else %}{{ field|widget }}{% endif %}
+    {% if field.errors %}<p id="{{ field.auto_id }}-error" class="text-sm text-danger">{{ field.errors|first }}</p>{% elif field.help_text %}<p class="text-xs text-ink-3">{{ field.help_text }}</p>{% endif %}
+  </div>
+{% endif %}

@@ -1,0 +1,17 @@
+<a href="{% url 'gigs:detail' g.pk %}" class="group flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition hover:border-brand-200 hover:shadow-[var(--shadow-pop)]">
+  <div class="flex items-start gap-3">
+    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon g.category.icon %}</span>
+    <div class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-center gap-1.5 text-xs text-ink-3">{{ g.category.name }} {% sample_badge g.is_sample %}{% if g.status != "open" %}{% status_badge g.status %}{% endif %}</div>
+      <h3 class="line-clamp-2 font-semibold group-hover:text-brand-700">{{ g.title }}</h3>
+    </div>
+    <div class="shrink-0 text-right"><div class="whitespace-nowrap font-bold tabular-nums">{{ g.budget_ugx|ugx }}</div><div class="text-xs text-ink-3">budget</div></div>
+  </div>
+  <p class="line-clamp-2 text-sm text-ink-2">{{ g.description }}</p>
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-3">
+    <span class="flex items-center gap-1">{% icon "map-pin" "size-3.5" %} {{ g.get_mode_display }} · {{ g.campus.name }}</span>
+    {% if g.deadline %}<span class="flex items-center gap-1">{% icon "calendar-days" "size-3.5" %} Due {{ g.deadline|date:"j M" }}</span>{% endif %}
+    <span class="flex items-center gap-1">{% icon "users" "size-3.5" %} {{ g.applicant_count }} applied</span>
+    <span class="flex items-center gap-1">{% icon "clock" "size-3.5" %} {{ g.created_at|ago }}</span>
+  </div>
+</a>

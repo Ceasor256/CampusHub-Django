@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Marketplace{% endblock %}
+{% block content %}
+<div class="container-page pb-10">
+  <div class="flex flex-col gap-3 py-6 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600">Marketplace</div>
+      <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{% if request.GET.q %}Results for “{{ request.GET.q }}”{% elif active_category %}{{ active_category.name }}{% else %}Buy &amp; sell on campus{% endif %}</h1>
+      <p class="mt-1 text-ink-2">{{ page.paginator.count }} item{{ page.paginator.count|pluralize }} {% if campus %}at {{ campus }}{% else %}across all campuses{% endif %}</p>
+    </div>
+    <a href="{% url 'marketplace:create' %}" class="btn btn-primary">Sell an item</a>
+  </div>
+
+  <div class="scrollbar-none -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+    <a href="{% querystring_set request 'category' '' %}" class="chip {% if not active_category %}chip-active{% endif %}">All</a>
+    {% for c in categories %}<a href="{% querystring_set request 'category' c.slug %}" class="chip {% if active_category.pk == c.pk %}chip-active{% endif %}">{% icon c.icon "size-4" %} {{ c.name }}</a>{% endfor %}
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-[16rem_1fr]">
+    <details class="rounded-2xl border border-line bg-surface p-4 lg:hidden">
+      <summary class="flex cursor-pointer list-none items-center gap-2 font-semibold">{% icon "sliders-horizontal" "size-4" %} Filters &amp; sort</summary>
+      {% include "marketplace/_filters.html" with prefix="m-" %}
+    </details>
+    <aside class="hidden rounded-2xl border border-line bg-surface p-4 lg:sticky lg:top-20 lg:block lg:self-start">
+      <h2 class="flex items-center gap-2 font-semibold">{% icon "sliders-horizontal" "size-4" %} Filters</h2>
+      {% include "marketplace/_filters.html" with prefix="d-" %}
+    </aside>
+    <div>
+      {% if page.object_list %}
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">{% for l in page.object_list %}{% include "includes/listing_card.html" %}{% endfor %}</div>
+        {% include "includes/widgets.html" with w="pagination" %}
+      {% else %}
+        <div class="flex flex-col items-center rounded-[var(--radius-card)] border border-dashed border-line bg-surface px-6 py-12 text-center">
+          <div class="mb-3 grid size-12 place-items-center rounded-2xl bg-brand-50 text-brand-600">{% icon "store" "size-6" %}</div>
+          <h3 class="font-semibold">Nothing matches yet</h3><p class="mt-1 max-w-sm text-sm text-ink-2">Try fewer filters or another campus. New items are posted every day.</p>
+          <div class="mt-4 flex flex-wrap justify-center gap-2"><a href="?campus=all" class="btn btn-secondary">Search all campuses</a><a href="{% url 'marketplace:create' %}" class="btn btn-primary">Sell something</a></div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
