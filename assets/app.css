@@ -163,3 +163,47 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ------------------------------------------------------------ 3D scroll story
+ * Default (no JS, reduced motion, data saver, no WebGL): a simple dark section
+ * with the chapters as cards. With .story-live (added by the 3D scene), each
+ * chapter takes a full screen and the WebGL stage stays pinned behind them.
+ */
+@layer components {
+  .story { @apply relative overflow-clip bg-brand-950 text-white; }
+  .story-stage { display: none; }
+  .story-chapters { @apply relative grid gap-4 py-14 sm:grid-cols-2 lg:grid-cols-3; }
+  .story-intro { @apply sm:col-span-2 lg:col-span-3; }
+  .story-chapter { @apply rounded-2xl bg-white/5 p-6 ring-1 ring-white/10; }
+  .story-icon { @apply mb-4 inline-grid size-10 place-items-center rounded-xl bg-white/10 text-accent-400; }
+  .story-eyebrow { @apply mb-1 text-xs font-semibold uppercase tracking-wider text-accent-400; }
+  .story-title { @apply text-xl font-bold tracking-tight; }
+  .story-text { @apply mt-2 text-brand-100; }
+  .story-hint { display: none; }
+
+  .story-live .story-stage { @apply sticky top-0 z-0 block h-svh w-full; margin-bottom: -100svh; }
+  .story-live .story-stage canvas { @apply block size-full; }
+  /* Darken the text side so copy stays readable over moving objects. */
+  .story-live .story-stage::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(0deg, rgb(34 16 74 / 0.92) 0%, rgb(34 16 74 / 0.55) 30%, transparent 55%);
+  }
+  @media (width >= 64rem) {
+    .story-live .story-stage::after {
+      background: linear-gradient(90deg, rgb(34 16 74 / 0.9) 0%, rgb(34 16 74 / 0.55) 32%, transparent 55%);
+    }
+  }
+  .story-live .story-chapters { @apply z-10 block py-0; }
+  .story-live .story-intro { @apply sr-only; }
+  .story-live .story-chapter { @apply flex min-h-svh items-end rounded-none bg-transparent p-0 pb-24 ring-0 lg:items-center lg:pb-0; }
+  .story-live .story-copy {
+    @apply max-w-md rounded-2xl bg-brand-950/70 p-5 backdrop-blur-sm transition duration-700 ease-out lg:bg-transparent lg:p-0 lg:backdrop-blur-none;
+    opacity: 0.12;
+    transform: translateY(24px);
+  }
+  .story-live .story-chapter.is-active .story-copy { opacity: 1; transform: none; }
+  .story-live .story-title { @apply text-3xl leading-tight sm:text-4xl lg:text-5xl; }
+  .story-live .story-text { @apply text-base sm:text-lg; }
+  .story-live .story-hint { @apply mt-6 block text-sm font-semibold text-brand-200; }
+}

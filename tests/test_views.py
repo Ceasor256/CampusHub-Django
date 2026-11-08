@@ -60,6 +60,25 @@ class ViewTests(TestCase):
         self.assertEqual(self.client.get("/marketplace/00000000-0000-0000-0000-000000000000/").status_code, 404)
         self.assertEqual(self.client.get("/does-not-exist/").status_code, 404)
 
+    def test_3d_story_on_home_and_tour(self):
+        from django.contrib.staticfiles import finders
+
+        home = self.client.get("/")
+        tour = self.client.get("/tour/")
+        self.assertEqual(tour.status_code, 200)
+        for r in (home, tour):
+            html = r.content.decode()
+            self.assertIn("data-story", html)
+            self.assertIn("js/story-scene.js", html)  # loaded on demand, not with a <script> tag
+            self.assertIsNone(re.search(r"<script[^>]*story-scene", html))
+            self.assertEqual(html.count('class="story-chapter"'), 5)
+        # The tour's first chapter is the page heading; the homepage keeps its own h1 in the hero.
+        self.assertContains(tour, '<h1 class="story-title">')
+        self.assertEqual(home.content.decode().count("<h1"), 1)
+        # The bundled scene and loader are real files.
+        self.assertTrue(finders.find("js/story.js"))
+        self.assertTrue(finders.find("js/story-scene.js"))
+
     def test_member_pages_require_login(self):
         for url in ["/me/", "/settings/", "/messages/", "/notifications/", "/marketplace/new/", "/gigs/new/", "/staff/"]:
             r = self.client.get(url)

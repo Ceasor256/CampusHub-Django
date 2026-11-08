@@ -1,6 +1,6 @@
 <a href="{% url 'deals:detail' d.pk %}" class="group relative flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)] transition hover:border-accent-300 hover:shadow-[var(--shadow-pop)]">
   <div class="flex items-center justify-between gap-2 bg-gradient-to-r from-accent-100 to-accent-50 px-4 py-3">
-    <span class="text-xl font-extrabold tracking-tight text-accent-900">{{ d.discount_label }}</span>
+    <span class="font-display text-2xl font-semibold text-accent-900">{{ d.discount_label }}</span>
     <div class="flex gap-1">{% if d.is_sponsored %}<span class="badge badge-neutral" title="Paid placement">Sponsored</span>{% endif %}{% sample_badge d.is_sample %}</div>
   </div>
   <div class="flex flex-1 flex-col gap-2 p-4">

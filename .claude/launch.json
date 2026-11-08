@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "campushub-django",
+      "runtimeExecutable": "C:/Users/pc/Desktop/CampusHub-Django/venv/Scripts/python.exe",
+      "runtimeArgs": ["C:/Users/pc/Desktop/CampusHub-Django/manage.py", "runserver", "8010"],
+      "port": 8010
+    }
+  ]
+}

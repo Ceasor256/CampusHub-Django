@@ -1,0 +1,78 @@
+{% load static %}
+{% comment %}
+CampusHub 3D scroll story. Used on the homepage and at /tour/.
+  include "includes/story.html"                       (homepage)
+  include "includes/story.html" with heading_level=1  (tour page: first chapter is the page's h1)
+Without JavaScript, with reduced motion, data saver or no WebGL, the chapters
+show as a simple list: nobody misses the content.
+{% endcomment %}
+<section id="story" class="story" data-story data-story-src="{% static 'js/story-scene.js' %}" aria-label="How CampusHub works">
+  <div class="story-stage" data-story-stage></div>
+  <div class="story-chapters container-page">
+    {% if heading_level != 1 %}
+    <div class="story-intro">
+      <p class="story-eyebrow">How CampusHub works</p>
+      <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Everything on campus, connected</h2>
+    </div>
+    {% endif %}
+
+    <article class="story-chapter" data-chapter="0">
+      <div class="story-copy">
+        <span class="story-icon">{% icon "sparkles" "size-5" %}</span>
+        <p class="story-eyebrow">CampusHub</p>
+        {% if heading_level == 1 %}<h1 class="story-title">One hub for everything on campus.</h1>{% else %}<h3 class="story-title">One hub for everything on campus.</h3>{% endif %}
+        <p class="story-text">Students, sellers and businesses around your university, connected in one place. Prices in UGX, safe messaging built in.</p>
+        <p class="story-hint" aria-hidden="true">Scroll to explore ↓</p>
+      </div>
+    </article>
+
+    <article class="story-chapter" data-chapter="1">
+      <div class="story-copy">
+        <span class="story-icon">{% icon "store" "size-5" %}</span>
+        <p class="story-eyebrow">Buy &amp; sell</p>
+        <h3 class="story-title">Turn what you don't use into cash.</h3>
+        <p class="story-text">Phones, laptops, textbooks, furniture. List an item in under a minute, chat privately with buyers and meet safely on campus.</p>
+        <a href="{% url 'marketplace:browse' %}" class="btn btn-accent mt-6">Browse the marketplace</a>
+      </div>
+    </article>
+
+    <article class="story-chapter" data-chapter="2">
+      <div class="story-copy">
+        <span class="story-icon">{% icon "briefcase" "size-5" %}</span>
+        <p class="story-eyebrow">Gigs</p>
+        <h3 class="story-title">Earn from the skills you already have.</h3>
+        <p class="story-text">Design, tutoring, photography, errands, tech help. Apply to gigs from students nearby, get chosen, finish the work and build your rating.</p>
+        <a href="{% url 'gigs:browse' %}" class="btn btn-accent mt-6">Find a gig</a>
+      </div>
+    </article>
+
+    <article class="story-chapter" data-chapter="3">
+      <div class="story-copy">
+        <span class="story-icon">{% icon "ticket" "size-5" %}</span>
+        <p class="story-eyebrow">Deals</p>
+        <h3 class="story-title">Unlock real discounts near campus.</h3>
+        <p class="story-text">Restaurants, print shops, salons and phone shops post student deals. Claim a code and show it at the counter.</p>
+        <a href="{% url 'deals:browse' %}" class="btn btn-accent mt-6">See today's deals</a>
+      </div>
+    </article>
+
+    <article class="story-chapter" data-chapter="4">
+      <div class="story-copy">
+        <span class="story-icon">{% icon "badge-check" "size-5" %}</span>
+        <p class="story-eyebrow">Join</p>
+        <h3 class="story-title">Your campus, in one hub.</h3>
+        <p class="story-text">Free to join. Verified badges, private messaging and real people reviewing every report.</p>
+        <div class="mt-6 flex flex-wrap gap-2">
+          {% if user.is_authenticated %}
+            <a href="{% url 'core:sell' %}" class="btn btn-accent">Post something</a>
+            <a href="{% url 'marketplace:browse' %}" class="btn bg-white/10 text-white ring-1 ring-white/20 hover:bg-white/20">Explore</a>
+          {% else %}
+            <a href="{% url 'accounts:register' %}" class="btn btn-accent">Join free</a>
+            <a href="{% url 'core:sell' %}" class="btn bg-white/10 text-white ring-1 ring-white/20 hover:bg-white/20">Start selling</a>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+<script type="module" src="{% static 'js/story.js' %}"></script>

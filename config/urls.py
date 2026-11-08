@@ -16,6 +16,7 @@ core_urls = ([
     path("", core.home, name="home"),
     path("campus/", core.set_campus, name="set_campus"),
     path("services/", core.services, name="services"),
+    path("tour/", core.page("core/tour.html"), name="tour"),
     path("sell/", core.sell, name="sell"),
     path("safety/", core.page("core/safety.html"), name="safety"),
     path("terms/", core.page("core/terms.html"), name="terms"),
