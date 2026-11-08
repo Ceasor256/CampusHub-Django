@@ -45,15 +45,15 @@ import {
   WebGLRenderer,
 } from "three";
 
-// Brand palette (matches assets/app.css).
+// Brand palette: "Café" theme (matches assets/app.css).
 const COLOR = {
-  brand: 0x6633d1,
-  brandLight: 0xb9a0f6,
-  night: 0x22104a,
-  accent: 0xfbbd2e,
-  white: 0xffffff,
-  ink: 0x17131f,
-  paper: 0xf5f1fe,
+  brand: 0x7b5233, // espresso / caramel
+  brandLight: 0xd2b391, // latte
+  night: 0x22150d, // dark roast background
+  accent: 0xd9ae63, // soft gold
+  white: 0xfaf3e6, // warm cream
+  ink: 0x2a1e17,
+  paper: 0xfaf6f1,
 };
 
 const CHAPTERS = 5;
@@ -146,7 +146,7 @@ function buildMarketItems() {
   items.push({ obj: phone, mats: [phoneMat, screenMat] });
 
   // Laptop
-  const bodyMat = fadeable({ color: 0xc9c3d6, metalness: 0.7, roughness: 0.35 });
+  const bodyMat = fadeable({ color: 0xd3cbc2, metalness: 0.7, roughness: 0.35 });
   const lapScreenMat = new MeshBasicMaterial({ color: COLOR.brand, transparent: true });
   const laptop = new Group();
   const base = new Mesh(new BoxGeometry(1.3, 0.06, 0.9), bodyMat);
@@ -180,7 +180,7 @@ function buildGigCards() {
   for (let i = 0; i < 5; i++) {
     const cardMat = fadeable({ color: COLOR.white, roughness: 0.5 });
     const stripeMat = new MeshBasicMaterial({ color: i % 2 ? COLOR.accent : COLOR.brand, transparent: true });
-    const lineMat = new MeshBasicMaterial({ color: 0xd7c8fb, transparent: true });
+    const lineMat = new MeshBasicMaterial({ color: 0xe6d3bd, transparent: true });
     const card = new Group();
     card.add(slab(1.15, 0.72, 0.04, 0.08, cardMat));
     const stripe = new Mesh(new PlaneGeometry(1.0, 0.12), stripeMat);
@@ -198,7 +198,7 @@ function buildGigCards() {
 function buildTickets() {
   const tickets = [];
   for (let i = 0; i < 8; i++) {
-    const mat = fadeable({ color: COLOR.accent, metalness: 0.45, roughness: 0.3, emissive: 0x6b3d0a, emissiveIntensity: 0.4 });
+    const mat = fadeable({ color: COLOR.accent, metalness: 0.45, roughness: 0.3, emissive: 0x5a3d12, emissiveIntensity: 0.4 });
     const perfMat = new MeshBasicMaterial({ color: COLOR.white, transparent: true });
     const ticket = new Group();
     ticket.add(slab(0.92, 0.46, 0.05, 0.08, mat));

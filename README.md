@@ -338,6 +338,38 @@ npm run css
 
 Text-only changes in templates don't need a rebuild; just refresh the browser.
 
+### The current look: "Café" theme
+
+The site uses a warm coffee-shop style:
+
+| Part | What it uses | Where to change it |
+|---|---|---|
+| Main colour (buttons, links) | Espresso brown `#7b5233` (`brand-600`) | `--color-brand-*` in the `@theme` block of `assets/app.css` |
+| Dark sections (hero, 3D tour) | Dark roast `#22150d` (`brand-950`) | same place |
+| Accent (highlights, gig card) | Soft gold `#d9ae63` (`accent-400`) | `--color-accent-*` |
+| Page background and cards | Cream `#f7f1e8` and `#fffdf9` | `--color-canvas`, `--color-surface` |
+| Text | Warm dark brown `#2a1e17` | `--color-ink`, `--color-ink-2`, `--color-ink-3` |
+| Headings (`h1`, `h2`, the logo name) | **Playfair Display** (serif) | `--font-display` |
+| Body text | **Plus Jakarta Sans** | `--font-sans` |
+| Buttons | Rounded "pill" shape | `.btn` in `assets/app.css` |
+
+Both fonts are stored inside the project in `static/font/`, so the site makes no requests to Google Fonts.
+
+A few colours live outside `app.css`, so change these too if you pick a new palette:
+
+- `templates/includes/logo.html` and `static/img/icon.svg`: the logo
+- `templates/base.html`: `<meta name="theme-color">`, the colour of the phone's address bar
+- `templates/staff/overview.html`: the chart bars
+- `assets/story/scene.js`: the `COLOR` list for the 3D tour (rebuild it with `npm run story`)
+
+After changing colours, rebuild everything with one command:
+
+```powershell
+npm run build
+```
+
+**Going back to the old purple look:** the earlier theme was saved to `CampusHub-Django-purple-theme-backup.zip` on your Desktop. Unzip it and copy its files over the project, replacing the current ones. This also brings back the older README, which doesn't have this section. Then run `npm run build` and restart the server.
+
 ---
 
 ## 11. Settings and configuration

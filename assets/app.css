@@ -15,39 +15,54 @@
   src: url("../font/plus-jakarta-sans-latin.woff2") format("woff2-variations");
 }
 
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url("../font/playfair-display-latin.woff2") format("woff2-variations");
+}
+
 /*
- * CampusHub design tokens (same as the Next.js build).
- * Brand: "Jacaranda" purple + "Matooke" amber accent.
+ * CampusHub design tokens: "Café" theme.
+ * Warm espresso / caramel browns, soft gold accent, cream backgrounds and a
+ * serif display face for headings. Colours sampled from the reference video
+ * (latte #a7907a, espresso #7a5b42, cream #d4cdc1, dark roast #524335).
+ * Previous purple theme: see CampusHub-Django-purple-theme-backup.zip.
  */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
 
-  --color-brand-50: #f5f1fe;
-  --color-brand-100: #ebe3fd;
-  --color-brand-200: #d7c8fb;
-  --color-brand-300: #b9a0f6;
-  --color-brand-400: #9670ef;
-  --color-brand-500: #7a4be4;
-  --color-brand-600: #6633d1;
-  --color-brand-700: #5527b0;
-  --color-brand-800: #46228f;
-  --color-brand-900: #3a1f73;
-  --color-brand-950: #22104a;
+  /* Brand: espresso & caramel */
+  --color-brand-50: #faf6f1;
+  --color-brand-100: #f3eadf;
+  --color-brand-200: #e6d3bd;
+  --color-brand-300: #d2b391;
+  --color-brand-400: #b98e64;
+  --color-brand-500: #9c6f45;
+  --color-brand-600: #7b5233;
+  --color-brand-700: #633f26;
+  --color-brand-800: #4d301d;
+  --color-brand-900: #3a2416;
+  --color-brand-950: #22150d;
 
-  --color-accent-50: #fff8e6;
-  --color-accent-100: #ffedbf;
-  --color-accent-300: #ffcf5c;
-  --color-accent-400: #fbbd2e;
-  --color-accent-500: #f2a60c;
-  --color-accent-700: #a86605;
-  --color-accent-900: #6b3d0a;
+  /* Accent: soft gold / latte foam */
+  --color-accent-50: #fdf8ec;
+  --color-accent-100: #f8ecd0;
+  --color-accent-300: #e9c98c;
+  --color-accent-400: #d9ae63;
+  --color-accent-500: #c6964a;
+  --color-accent-700: #8f6526;
+  --color-accent-900: #5a3d12;
 
-  --color-ink: #17131f;
-  --color-ink-2: #4a4458;
-  --color-ink-3: #7a7389;
-  --color-line: #e9e5ef;
-  --color-surface: #ffffff;
-  --color-canvas: #f8f7fa;
+  /* Neutrals: warm ink on cream */
+  --color-ink: #2a1e17;
+  --color-ink-2: #5c4a3e;
+  --color-ink-3: #7d6b5e;
+  --color-line: #eadfd3;
+  --color-surface: #fffdf9;
+  --color-canvas: #f7f1e8;
 
   --color-success: #138a52;
   --color-success-bg: #e8f7ef;
@@ -59,8 +74,8 @@
   --color-info-bg: #eaf0fd;
 
   --radius-card: 1rem;
-  --shadow-card: 0 1px 2px rgb(23 19 31 / 0.04), 0 1px 3px rgb(23 19 31 / 0.06);
-  --shadow-pop: 0 10px 30px -10px rgb(34 16 74 / 0.25);
+  --shadow-card: 0 1px 2px rgb(42 30 23 / 0.04), 0 1px 3px rgb(42 30 23 / 0.07);
+  --shadow-pop: 0 12px 32px -12px rgb(34 21 13 / 0.3);
 }
 
 @layer base {
@@ -79,7 +94,12 @@
     background: var(--color-brand-200);
   }
   dialog::backdrop {
-    background: rgb(23 19 31 / 0.4);
+    background: rgb(34 21 13 / 0.45);
+  }
+  /* Elegant serif for page and section headings (like the reference design). */
+  h1, h2, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.005em;
   }
 }
 
@@ -103,7 +123,7 @@
 /* ------------------------------------------------------------ components */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 h-11 px-4 text-sm;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 h-11 px-4 text-sm;
   }
   .btn-sm { @apply h-9 px-3 text-sm; }
   .btn-lg { @apply h-12 px-6 text-base; }
@@ -177,7 +197,7 @@
   .story-chapter { @apply rounded-2xl bg-white/5 p-6 ring-1 ring-white/10; }
   .story-icon { @apply mb-4 inline-grid size-10 place-items-center rounded-xl bg-white/10 text-accent-400; }
   .story-eyebrow { @apply mb-1 text-xs font-semibold uppercase tracking-wider text-accent-400; }
-  .story-title { @apply text-xl font-bold tracking-tight; }
+  .story-title { @apply font-display text-2xl font-semibold; }
   .story-text { @apply mt-2 text-brand-100; }
   .story-hint { display: none; }
 
@@ -187,11 +207,11 @@
   .story-live .story-stage::after {
     content: "";
     @apply pointer-events-none absolute inset-0;
-    background: linear-gradient(0deg, rgb(34 16 74 / 0.92) 0%, rgb(34 16 74 / 0.55) 30%, transparent 55%);
+    background: linear-gradient(0deg, rgb(34 21 13 / 0.92) 0%, rgb(34 21 13 / 0.55) 30%, transparent 55%);
   }
   @media (width >= 64rem) {
     .story-live .story-stage::after {
-      background: linear-gradient(90deg, rgb(34 16 74 / 0.9) 0%, rgb(34 16 74 / 0.55) 32%, transparent 55%);
+      background: linear-gradient(90deg, rgb(34 21 13 / 0.9) 0%, rgb(34 21 13 / 0.55) 32%, transparent 55%);
     }
   }
   .story-live .story-chapters { @apply z-10 block py-0; }
