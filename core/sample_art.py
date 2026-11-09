@@ -3,7 +3,7 @@ Illustrated pictures for SAMPLE listings (development data only).
 
 Sample items have no real photos, and we never pass off stock photos as a
 seller's own. Instead each sample listing gets a clearly illustrated picture
-in the site's café colours, built from its category icon and marked
+in the site's colours, built from its category icon and marked
 "Sample illustration". Real listings always use the seller's uploaded photos.
 """
 
@@ -13,17 +13,18 @@ from django.utils.html import escape
 
 from core.icons import ICONS
 
-# (background top, background bottom, blob) per category icon, all from the café palette.
+# (background top, background bottom, blob) per category icon: cream beige,
+# muted sage and soft burgundy tints from the site palette.
 TONES = {
-    "laptop": ("#f3eadf", "#e6d3bd", "#d2b391"),
-    "smartphone": ("#fdf8ec", "#f8ecd0", "#e9c98c"),
-    "headphones": ("#faf6f1", "#e6d3bd", "#b98e64"),
-    "book-open": ("#f8ecd0", "#e9c98c", "#d9ae63"),
-    "shirt": ("#faf6f1", "#f3eadf", "#d2b391"),
-    "sofa": ("#f3eadf", "#d2b391", "#b98e64"),
-    "refrigerator": ("#fdf8ec", "#e6d3bd", "#d2b391"),
+    "laptop": ("#f7ede0", "#e8d2b5", "#a5a79b"),
+    "smartphone": ("#f5f5f2", "#d4d5cc", "#e8d2b5"),
+    "headphones": ("#fbf3f1", "#e5c0ba", "#a5a79b"),
+    "book-open": ("#fcf8f2", "#efdfc9", "#cc8c84"),
+    "shirt": ("#f4e2de", "#e8d2b5", "#a5a79b"),
+    "sofa": ("#e9eae4", "#bdbfb4", "#e8d2b5"),
+    "refrigerator": ("#f7ede0", "#d4d5cc", "#cc8c84"),
 }
-DEFAULT_TONE = ("#faf6f1", "#e6d3bd", "#d2b391")
+DEFAULT_TONE = ("#fcf8f2", "#e8d2b5", "#a5a79b")
 
 
 def _icon_markup(name):
@@ -46,16 +47,23 @@ def listing_svg(icon_name, title):
   <circle cx="640" cy="110" r="150" fill="{blob}" opacity="0.35"/>
   <circle cx="130" cy="520" r="110" fill="{blob}" opacity="0.3"/>
   <circle cx="400" cy="280" r="230" fill="url(#glow)"/>
-  <ellipse cx="400" cy="470" rx="170" ry="22" fill="#4d301d" opacity="0.12"/>
-  <g transform="translate(256 136) scale(12)" fill="none" stroke="#7b5233" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{_icon_markup(icon_name)}</g>
-  <g transform="translate(560 540)"><rect x="0" y="0" width="216" height="36" rx="18" fill="#fffdf9" opacity="0.85"/><text x="108" y="24" text-anchor="middle" font-family="Plus Jakarta Sans, Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#7d6b5e">Sample illustration</text></g>
+  <ellipse cx="400" cy="470" rx="170" ry="22" fill="#240302" opacity="0.12"/>
+  <g transform="translate(256 136) scale(12)" fill="none" stroke="#590907" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{_icon_markup(icon_name)}</g>
+  <g transform="translate(560 540)"><rect x="0" y="0" width="216" height="36" rx="18" fill="#fffdf9" opacity="0.85"/><text x="108" y="24" text-anchor="middle" font-family="Plus Jakarta Sans, Segoe UI, sans-serif" font-size="16" font-weight="600" fill="#756862">Sample illustration</text></g>
 </svg>"""
 
 
-def attach_sample_images():
-    """Give every sample listing without pictures an illustration. Safe to run again."""
+def attach_sample_images(refresh=False):
+    """
+    Give every sample listing without pictures an illustration. Safe to run again.
+    refresh=True redraws existing sample illustrations (after a colour change).
+    """
     from marketplace.models import Listing, ListingImage
 
+    if refresh:
+        for old in ListingImage.objects.filter(listing__is_sample=True, image__endswith="sample.svg"):
+            old.image.delete(save=False)
+            old.delete()
     added = 0
     for listing in Listing.objects.filter(is_sample=True, images__isnull=True).select_related("category"):
         svg = listing_svg(listing.category.icon, listing.title).encode()

@@ -5,12 +5,12 @@
   "scripts": {
     "css": "tailwindcss -i assets/app.css -o static/css/app.css --minify",
     "css:watch": "tailwindcss -i assets/app.css -o static/css/app.css --watch",
-    "fonts": "node -e \"const fs=require('fs');fs.copyFileSync('node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2','static/font/plus-jakarta-sans-latin.woff2')\"",
+    "fonts": "node -e \"const fs=require('fs');fs.copyFileSync('node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2','static/font/plus-jakarta-sans-latin.woff2');fs.copyFileSync('node_modules/@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2','static/font/fraunces-latin.woff2')\"",
     "story": "esbuild assets/story/scene.js --bundle --minify --format=esm --target=es2020 --legal-comments=eof --outfile=static/js/story-scene.js",
     "build": "npm run css && npm run story"
   },
   "devDependencies": {
-    "@fontsource-variable/playfair-display": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@tailwindcss/cli": "^4.3.3",
     "esbuild": "^0.28.2",

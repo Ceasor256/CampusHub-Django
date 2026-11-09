@@ -44,10 +44,10 @@ Reusable snippets, each selected with `w`:
 {% elif w == "header" %}
   <div class="flex flex-col gap-3 py-6 sm:flex-row sm:items-end sm:justify-between">
     <div class="min-w-0">
-      {% if eyebrow %}<div class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600">{{ eyebrow }}</div>{% endif %}
+      {% if eyebrow %}<div class="eyebrow mb-1">{{ eyebrow }}</div>{% endif %}
       <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{{ title }}</h1>
       {% if subtitle %}<p class="mt-1 text-ink-2">{{ subtitle }}</p>{% endif %}
     </div>
-    {% if cta_href %}<a href="{{ cta_href }}" class="btn btn-primary shrink-0">{{ cta }}</a>{% endif %}
+    <div class="flex shrink-0 items-center gap-6">{% include "includes/cube3d.html" with icon=cube_icon %}{% if cta_href %}<a href="{{ cta_href }}" class="btn btn-primary shrink-0">{{ cta }}</a>{% endif %}</div>
   </div>
 {% endif %}

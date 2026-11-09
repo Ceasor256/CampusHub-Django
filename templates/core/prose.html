@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-page max-w-3xl pb-16">
-  <div class="py-6">
+  <div class="flex items-end justify-between gap-6 py-6"><div>
     {% block eyebrow %}{% endblock %}
     <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{% block heading %}{% endblock %}</h1>
     <p class="mt-1 text-ink-2">{% block subheading %}{% endblock %}</p>
-  </div>
+  </div>{% include "includes/cube3d.html" with icon="shield-check" %}</div>
   {% block draft %}{% endblock %}
   <div class="prose-page">{% block body %}{% endblock %}</div>
 </div>

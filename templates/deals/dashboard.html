@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container-page pb-12">
   <div class="flex flex-col gap-3 py-6 sm:flex-row sm:items-end sm:justify-between">
-    <div><div class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600">Business dashboard</div>
+    <div><div class="eyebrow mb-1">Business dashboard</div>
       <h1 class="flex flex-wrap items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">{{ b.name }} {% if b.is_verified %}{% verified_badge %}{% endif %}</h1>
       <a href="{% url 'deals:business_public' b.slug %}" class="mt-1 inline-block text-brand-600 hover:underline">View public profile →</a></div>
     <a href="{% url 'deals:new_deal' b.pk %}" class="btn btn-primary">{% icon "plus" "size-4" %} New deal</a>

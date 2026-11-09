@@ -81,4 +81,68 @@
       });
     });
   });
+
+  // ---------------------------------------------------------------- 3D effects
+  // Pure decoration: pages look and work the same without it.
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  // Tilt: [data-tilt] cards lean towards the mouse, with a light glare.
+  if (!reduceMotion && finePointer) {
+    var active = null, frame = 0, lastEvent = null;
+    var MAX = 7; // degrees
+    var paint = function () {
+      frame = 0;
+      if (!active || !lastEvent) return;
+      var r = active.getBoundingClientRect();
+      var x = (lastEvent.clientX - r.left) / r.width;  // 0..1
+      var y = (lastEvent.clientY - r.top) / r.height;  // 0..1
+      // Big cards tilt less so text stays easy to read.
+      var k = Math.min(1, 320 / Math.max(r.width, r.height));
+      active.style.setProperty("--ry", ((x - 0.5) * 2 * MAX * k).toFixed(2) + "deg");
+      active.style.setProperty("--rx", ((0.5 - y) * 2 * MAX * k).toFixed(2) + "deg");
+      active.style.setProperty("--gx", (x * 100).toFixed(1) + "%");
+      active.style.setProperty("--gy", (y * 100).toFixed(1) + "%");
+    };
+    var reset = function (el) {
+      el.classList.remove("is-tilting");
+      el.style.setProperty("--rx", "0deg");
+      el.style.setProperty("--ry", "0deg");
+    };
+    document.addEventListener("pointermove", function (e) {
+      if (e.pointerType !== "mouse") return;
+      var el = e.target.closest ? e.target.closest("[data-tilt]") : null;
+      if (el !== active) {
+        if (active) reset(active);
+        active = el;
+        if (active) active.classList.add("is-tilting");
+      }
+      lastEvent = e;
+      if (active && !frame) frame = requestAnimationFrame(paint);
+    }, { passive: true });
+    document.addEventListener("pointerleave", function () { if (active) { reset(active); active = null; } });
+  }
+
+  // Reveal: cards and sections below the fold rise in with a slight 3D turn.
+  // Only things not yet on screen are hidden, so nothing flickers on load.
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    var targets = $$("main [data-tilt], main .card, main section > h2, main .reveal-me").filter(function (el) {
+      return !el.closest("[data-story]") && !el.closest("dialog") && el.getBoundingClientRect().top > window.innerHeight;
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("is-in");
+        io.unobserve(en.target);
+        // Hand the transform back to hover/tilt once the entrance is done.
+        setTimeout(function () { en.target.classList.remove("reveal", "is-in"); en.target.style.removeProperty("--delay"); }, 1300);
+      });
+    }, { rootMargin: "0px 0px -8% 0px" });
+    targets.forEach(function (el) {
+      var i = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+      el.style.setProperty("--delay", (i % 4) * 80 + "ms");
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+  }
 })();

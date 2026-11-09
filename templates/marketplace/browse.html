@@ -4,11 +4,11 @@
 <div class="container-page pb-10">
   <div class="flex flex-col gap-3 py-6 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600">Marketplace</div>
+      <div class="eyebrow mb-1">Marketplace</div>
       <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{% if request.GET.q %}Results for “{{ request.GET.q }}”{% elif active_category %}{{ active_category.name }}{% else %}Buy &amp; sell on campus{% endif %}</h1>
       <p class="mt-1 text-ink-2">{{ page.paginator.count }} item{{ page.paginator.count|pluralize }} {% if campus %}at {{ campus }}{% else %}across all campuses{% endif %}</p>
     </div>
-    <a href="{% url 'marketplace:create' %}" class="btn btn-primary">Sell an item</a>
+    <div class="flex shrink-0 items-center gap-6">{% include "includes/cube3d.html" with icon="store" %}<a href="{% url 'marketplace:create' %}" class="btn btn-primary">Sell an item</a></div>
   </div>
 
   <div class="scrollbar-none -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">

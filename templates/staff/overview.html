@@ -41,11 +41,11 @@
   <svg viewBox="0 0 560 150" class="mt-4 h-40 w-full" role="img" aria-label="Daily signups, listings and gigs over the last 14 days">
     {% for x in m.daily %}
       <g><title>{{ x.day|date:"j M" }}: {{ x.signups }} signups, {{ x.listings }} listings, {{ x.gigs }} gigs</title>
-        <rect x="{{ x.x_pos }}" y="{{ x.y_gig }}" width="28" height="{{ x.h_g }}" fill="#d2b391"/>
-        <rect x="{{ x.x_pos }}" y="{{ x.y_list }}" width="28" height="{{ x.h_l }}" fill="#d9ae63"/>
-        <rect x="{{ x.x_pos }}" y="{{ x.y_sign }}" width="28" height="{{ x.h_s }}" fill="#7b5233"/>
-        <line x1="{{ x.x_pos }}" x2="{{ x.x_pos|add:28 }}" y1="128.5" y2="128.5" stroke="#e9e5ef"/>
-        <text x="{{ x.label_x }}" y="145" text-anchor="middle" font-size="10" fill="#7a7389">{{ x.day|date:"d" }}</text>
+        <rect x="{{ x.x_pos }}" y="{{ x.y_gig }}" width="28" height="{{ x.h_g }}" fill="#a5a79b"/>
+        <rect x="{{ x.x_pos }}" y="{{ x.y_list }}" width="28" height="{{ x.h_l }}" fill="#e8d2b5"/>
+        <rect x="{{ x.x_pos }}" y="{{ x.y_sign }}" width="28" height="{{ x.h_s }}" fill="#590907"/>
+        <line x1="{{ x.x_pos }}" x2="{{ x.x_pos|add:28 }}" y1="128.5" y2="128.5" stroke="#eadfd2"/>
+        <text x="{{ x.label_x }}" y="145" text-anchor="middle" font-size="10" fill="#756862">{{ x.day|date:"d" }}</text>
       </g>
     {% endfor %}
   </svg>

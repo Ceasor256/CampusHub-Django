@@ -5,7 +5,7 @@
   {% include "includes/widgets.html" with w="header" eyebrow="Services" title="Everything on CampusHub" subtitle="What you can use today, and what we're building next. We only switch on a service when it's ready to use properly." %}
   <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
     {% for ic, title, body, href, status in modules %}
-      {% if href %}<a href="{{ href }}" class="rounded-2xl border border-line bg-surface p-5 transition hover:border-brand-200 hover:shadow-[var(--shadow-pop)]">{% else %}<div class="rounded-2xl border border-dashed border-line bg-surface/60 p-5">{% endif %}
+      {% if href %}<a href="{{ href }}" data-tilt class="group rounded-2xl border border-line bg-surface p-5 hover:border-brand-200">{% else %}<div class="rounded-2xl border border-dashed border-line bg-surface/60 p-5">{% endif %}
         <div class="flex items-start justify-between gap-3">
           <span class="grid size-11 place-items-center rounded-xl {% if status == 'live' %}bg-brand-50 text-brand-600{% else %}bg-canvas text-ink-3{% endif %}">{% icon ic %}</span>
           {% if status == "live" %}<span class="badge badge-success">Available now</span>{% elif status == "next" %}<span class="badge badge-brand">Coming next</span>{% else %}<span class="badge badge-neutral">On our roadmap</span>{% endif %}

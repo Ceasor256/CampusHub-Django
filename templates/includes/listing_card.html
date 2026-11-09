@@ -1,8 +1,8 @@
 {% with cover=l.images.all|first %}
-<a href="{% url 'marketplace:detail' l.pk %}" class="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)] transition hover:border-brand-200 hover:shadow-[var(--shadow-pop)]">
+<a href="{% url 'marketplace:detail' l.pk %}" data-tilt class="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)] hover:border-brand-200">
   <div class="relative aspect-[4/3] overflow-hidden bg-canvas">
     {% if cover %}
-      <img src="{{ cover.image.url }}" alt="{{ l.title }}" loading="lazy" decoding="async" class="size-full object-cover transition group-hover:scale-[1.02]">
+      <img src="{{ cover.image.url }}" alt="{{ l.title }}" loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]">
     {% else %}
       <div class="grid size-full place-items-center bg-gradient-to-br from-brand-50 to-accent-50 text-brand-300">{% icon l.category.icon "size-10" %}</div>
     {% endif %}
@@ -10,7 +10,7 @@
   </div>
   <div class="flex flex-1 flex-col gap-1 p-3">
     <div class="flex flex-wrap items-baseline gap-x-1.5">
-      <span class="whitespace-nowrap text-base font-bold tabular-nums">{{ l.price_ugx|ugx_price }}</span>
+      <span class="whitespace-nowrap text-base font-bold tabular-nums text-brand-600">{{ l.price_ugx|ugx_price }}</span>
       {% if l.is_negotiable %}<span class="text-xs font-medium text-ink-3">Negotiable</span>{% endif %}
     </div>
     <h3 class="line-clamp-2 text-sm font-medium text-ink-2 group-hover:text-ink">{{ l.title }}</h3>

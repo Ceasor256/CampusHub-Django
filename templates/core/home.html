@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Uganda's campus marketplace{% endblock %}
 {% block content %}
-<section class="relative overflow-hidden border-b border-line bg-brand-950 text-white">
-  <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-24 size-[28rem] rounded-full bg-brand-600/40 blur-3xl"></div>
-  <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 left-1/3 size-[22rem] rounded-full bg-accent-500/20 blur-3xl"></div>
+<section class="relative overflow-hidden border-b border-line bg-gradient-to-br from-brand-950 via-brand-800 to-brand-600 text-white">
+  <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-24 size-[28rem] rounded-full bg-brand-400/30 blur-3xl"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 left-1/3 size-[22rem] rounded-full bg-sage-400/20 blur-3xl"></div>
   <div class="container-page relative grid gap-10 py-12 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:py-20">
     <div>
-      <p class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-brand-100 ring-1 ring-white/15"><span class="size-1.5 rounded-full bg-accent-400"></span> Built for students in Uganda</p>
+      <p class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-300 ring-1 ring-white/15"><span class="size-1.5 rounded-full bg-accent-400"></span> Built for students in Uganda</p>
       <h1 class="mt-4 text-4xl font-semibold leading-[1.08] sm:text-5xl lg:text-6xl">Everything your campus needs, <span class="text-accent-400">in one hub.</span></h1>
       <p class="mt-4 max-w-xl text-lg text-brand-100">Buy and sell with students nearby, earn from gigs, and unlock deals from businesses around your university. Prices in UGX, safe messaging built in.</p>
       <form action="{% url 'marketplace:browse' %}" role="search" class="mt-7 flex max-w-xl gap-2 rounded-2xl bg-white p-1.5 shadow-[var(--shadow-pop)]">
@@ -14,7 +14,7 @@
           <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3">{% icon "search" %}</span>
           <input name="q" placeholder="Laptop, calculator, mattress…" class="h-12 w-full rounded-xl pl-10 pr-2 text-ink placeholder:text-ink-3 focus:outline-none">
         </label>
-        <button class="h-12 rounded-xl bg-brand-600 px-5 font-semibold text-white hover:bg-brand-700">Search</button>
+        <button class="btn btn-primary h-12 rounded-xl">Search</button>
       </form>
       <form method="post" action="{% url 'core:set_campus' %}" class="mt-4 flex flex-wrap items-center gap-2 text-sm text-brand-100">
         {% csrf_token %}
@@ -27,11 +27,11 @@
       </form>
       <a href="#story" class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-400 hover:text-accent-300">See how CampusHub works {% icon "arrow-right" "size-4" %}</a>
     </div>
-    <div class="grid grid-cols-2 gap-3">
-      <a href="{% url 'marketplace:browse' %}" class="flex flex-col justify-between gap-6 rounded-2xl bg-white p-4 text-ink transition hover:-translate-y-0.5 sm:p-5">{% icon "store" "size-6" %}<div><div class="font-bold">Marketplace</div><div class="text-sm opacity-75">Phones, laptops, books, furniture</div></div></a>
-      <a href="{% url 'gigs:browse' %}" class="flex flex-col justify-between gap-6 rounded-2xl bg-accent-400 p-4 text-ink transition hover:-translate-y-0.5 sm:p-5">{% icon "briefcase" "size-6" %}<div><div class="font-bold">Gigs &amp; tasks</div><div class="text-sm opacity-75">Earn from design, tutoring, errands</div></div></a>
-      <a href="{% url 'deals:browse' %}" class="flex flex-col justify-between gap-6 rounded-2xl bg-brand-600 p-4 text-white ring-1 ring-white/10 transition hover:-translate-y-0.5 sm:p-5">{% icon "tag" "size-6" %}<div><div class="font-bold">Campus deals</div><div class="text-sm opacity-75">Discounts from local businesses</div></div></a>
-      <a href="{% url 'core:sell' %}" class="flex flex-col justify-between gap-6 rounded-2xl bg-white/10 p-4 text-white ring-1 ring-white/15 transition hover:-translate-y-0.5 sm:p-5">{% icon "arrow-right" "size-6" %}<div><div class="font-bold">Start selling</div><div class="text-sm opacity-75">List an item in under a minute</div></div></a>
+    <div class="depth grid grid-cols-2 gap-3">
+      <a href="{% url 'marketplace:browse' %}" data-tilt class="group flex flex-col justify-between gap-6 rounded-2xl bg-surface p-4 text-ink sm:p-5"><span class="pop-out text-brand-600">{% icon "store" "size-7" %}</span><div><div class="font-bold">Marketplace</div><div class="text-sm opacity-75">Phones, laptops, books, furniture</div></div></a>
+      <a href="{% url 'gigs:browse' %}" data-tilt class="group flex flex-col justify-between gap-6 rounded-2xl bg-accent-400 p-4 text-brand-800 sm:p-5"><span class="pop-out">{% icon "briefcase" "size-7" %}</span><div><div class="font-bold">Gigs &amp; tasks</div><div class="text-sm opacity-75">Earn from design, tutoring, errands</div></div></a>
+      <a href="{% url 'deals:browse' %}" data-tilt class="group flex flex-col justify-between gap-6 rounded-2xl bg-brand-500 p-4 text-white ring-1 ring-white/15 sm:p-5"><span class="pop-out text-accent-400">{% icon "tag" "size-7" %}</span><div><div class="font-bold">Campus deals</div><div class="text-sm opacity-75">Discounts from local businesses</div></div></a>
+      <a href="{% url 'core:sell' %}" data-tilt class="group flex flex-col justify-between gap-6 rounded-2xl bg-sage-400 p-4 text-brand-900 sm:p-5"><span class="pop-out">{% icon "arrow-right" "size-7 transition-transform duration-300 group-hover:translate-x-1" %}</span><div><div class="font-bold">Start selling</div><div class="text-sm opacity-75">List an item in under a minute</div></div></a>
     </div>
   </div>
 </section>
@@ -40,8 +40,8 @@
   <section aria-label="Marketplace categories">
     <div class="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:px-0 lg:grid-cols-8">
       {% for c in categories %}
-        <a href="{% url 'marketplace:browse' %}?category={{ c.slug }}" class="flex min-w-28 flex-col items-center gap-2 rounded-2xl border border-line bg-surface px-3 py-4 text-center text-xs font-semibold text-ink-2 transition hover:border-brand-200 hover:text-brand-700">
-          <span class="grid size-10 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon c.icon %}</span>{{ c.name }}
+        <a href="{% url 'marketplace:browse' %}?category={{ c.slug }}" data-tilt class="group flex min-w-28 flex-col items-center gap-2 rounded-2xl border border-line bg-surface px-3 py-4 text-center text-xs font-semibold text-ink-2 hover:border-brand-200 hover:text-brand-600">
+          <span class="icon-pop pop-out grid size-10 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon c.icon %}</span>{{ c.name }}
         </a>
       {% endfor %}
     </div>
@@ -83,12 +83,12 @@
     <div class="mb-3 flex items-baseline justify-between"><h2 class="text-lg font-bold tracking-tight sm:text-xl">More of campus life, coming soon</h2><a href="{% url 'core:services' %}" class="text-sm font-semibold text-brand-600">All services →</a></div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
       {% for ic, label in coming_soon %}
-        <div class="flex flex-col items-start gap-3 rounded-2xl border border-dashed border-line bg-surface p-4"><span class="text-ink-3">{% icon ic %}</span><div><div class="text-sm font-semibold">{{ label }}</div><div class="text-xs text-ink-3">Coming soon</div></div></div>
+        <div data-tilt class="group flex flex-col items-start gap-3 rounded-2xl border border-dashed border-sage-300 bg-surface p-4"><span class="text-ink-3">{% icon ic %}</span><div><div class="text-sm font-semibold">{{ label }}</div><div class="text-xs text-ink-3">Coming soon</div></div></div>
       {% endfor %}
     </div>
   </section>
 
-  <section class="grid gap-6 rounded-3xl bg-brand-50 p-6 sm:p-10 lg:grid-cols-[1fr_1.4fr]">
+  <section class="grid gap-6 rounded-3xl bg-sage-100 p-6 sm:p-10 lg:grid-cols-[1fr_1.4fr]">
     <div>
       <span class="text-brand-600">{% icon "shield-check" "size-8" %}</span>
       <h2 class="mt-3 text-2xl font-bold tracking-tight">Trust &amp; safety comes first</h2>
@@ -96,16 +96,16 @@
       <a href="{% url 'core:safety' %}" class="btn btn-secondary mt-4">Read our safety tips</a>
     </div>
     <ul class="grid gap-4 sm:grid-cols-2">
-      <li class="rounded-2xl bg-surface p-4 ring-1 ring-brand-100"><span class="text-brand-600">{% icon "badge-check" %}</span><h3 class="mt-2 font-semibold">Verified badges</h3><p class="mt-1 text-sm text-ink-2">Email, student and business verification so you know who you're dealing with.</p></li>
-      <li class="rounded-2xl bg-surface p-4 ring-1 ring-brand-100"><span class="text-brand-600">{% icon "message-circle" %}</span><h3 class="mt-2 font-semibold">Private messaging</h3><p class="mt-1 text-sm text-ink-2">Chat without sharing your phone number until you're ready.</p></li>
-      <li class="rounded-2xl bg-surface p-4 ring-1 ring-brand-100"><span class="text-brand-600">{% icon "flag" %}</span><h3 class="mt-2 font-semibold">Report anything</h3><p class="mt-1 text-sm text-ink-2">Every listing, gig, deal and user can be reported. Moderators review each one.</p></li>
-      <li class="rounded-2xl bg-surface p-4 ring-1 ring-brand-100"><span class="text-brand-600">{% icon "shield-check" %}</span><h3 class="mt-2 font-semibold">No fake payments</h3><p class="mt-1 text-sm text-ink-2">We never show something as paid unless the payment is verified.</p></li>
+      <li data-tilt class="group rounded-2xl bg-surface p-4 ring-1 ring-sage-200"><span class="text-brand-600">{% icon "badge-check" %}</span><h3 class="mt-2 font-semibold">Verified badges</h3><p class="mt-1 text-sm text-ink-2">Email, student and business verification so you know who you're dealing with.</p></li>
+      <li data-tilt class="group rounded-2xl bg-surface p-4 ring-1 ring-sage-200"><span class="text-brand-600">{% icon "message-circle" %}</span><h3 class="mt-2 font-semibold">Private messaging</h3><p class="mt-1 text-sm text-ink-2">Chat without sharing your phone number until you're ready.</p></li>
+      <li data-tilt class="group rounded-2xl bg-surface p-4 ring-1 ring-sage-200"><span class="text-brand-600">{% icon "flag" %}</span><h3 class="mt-2 font-semibold">Report anything</h3><p class="mt-1 text-sm text-ink-2">Every listing, gig, deal and user can be reported. Moderators review each one.</p></li>
+      <li data-tilt class="group rounded-2xl bg-surface p-4 ring-1 ring-sage-200"><span class="text-brand-600">{% icon "shield-check" %}</span><h3 class="mt-2 font-semibold">No fake payments</h3><p class="mt-1 text-sm text-ink-2">We never show something as paid unless the payment is verified.</p></li>
     </ul>
   </section>
 
   <section class="grid gap-4 sm:grid-cols-2">
-    <div class="rounded-3xl bg-ink p-6 text-white sm:p-8"><h2 class="text-xl font-bold">Got things you don't use?</h2><p class="mt-1 text-white/70">Turn them into cash. Listing is free.</p><a href="{% url 'marketplace:create' %}" class="btn btn-accent mt-5">Sell an item</a></div>
-    <div class="rounded-3xl bg-accent-400 p-6 sm:p-8"><h2 class="text-xl font-bold">Run a business near campus?</h2><p class="mt-1 text-ink/70">Reach thousands of students with deals and offers.</p><a href="{% url 'deals:business_home' %}" class="btn mt-5 bg-ink text-white hover:bg-ink/90">List your business</a></div>
+    <div data-tilt class="rounded-3xl bg-brand-600 p-6 text-white sm:p-8"><h2 class="text-xl font-bold">Got things you don't use?</h2><p class="mt-1 text-accent-300">Turn them into cash. Listing is free.</p><a href="{% url 'marketplace:create' %}" class="btn btn-accent mt-5">Sell an item</a></div>
+    <div data-tilt class="rounded-3xl bg-accent-400 p-6 text-brand-800 sm:p-8"><h2 class="text-xl font-bold">Run a business near campus?</h2><p class="mt-1 text-brand-700/80">Reach thousands of students with deals and offers.</p><a href="{% url 'deals:business_home' %}" class="btn btn-primary mt-5">List your business</a></div>
   </section>
 </div>
 {% endblock %}

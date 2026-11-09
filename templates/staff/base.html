@@ -24,7 +24,7 @@
   <div class="min-w-0 pb-12">
     <div class="flex flex-col gap-3 pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div><h1 class="text-2xl font-bold tracking-tight">{% block heading %}{% endblock %}</h1><p class="mt-1 text-ink-2">{% block subheading %}{% endblock %}</p></div>
-      <div class="flex flex-wrap gap-1">{% block actions %}{% endblock %}</div>
+      <div class="flex flex-wrap items-center gap-4"><div class="flex flex-wrap gap-1">{% block actions %}{% endblock %}</div>{% include "includes/cube3d.html" with icon="chart-column" %}</div>
     </div>
     {% block staff %}{% endblock %}
   </div>

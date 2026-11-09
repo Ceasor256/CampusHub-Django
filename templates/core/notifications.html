@@ -4,7 +4,7 @@
 <div class="container-page max-w-3xl pb-12">
   <div class="flex items-end justify-between py-6">
     <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Notifications</h1>
-    {% if unread_notifications %}<form method="post">{% csrf_token %}<button class="btn btn-secondary btn-sm">Mark all as read</button></form>{% endif %}
+    <div class="flex shrink-0 items-center gap-6">{% include "includes/cube3d.html" with icon="bell" %}{% if unread_notifications %}<form method="post">{% csrf_token %}<button class="btn btn-secondary btn-sm">Mark all as read</button></form>{% endif %}</div>
   </div>
   {% if not items %}
     {% include "includes/widgets.html" with w="empty" icon="bell" title="You're all caught up" body="Applications, messages, sales and deal updates will appear here." %}

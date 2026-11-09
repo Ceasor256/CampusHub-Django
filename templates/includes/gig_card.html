@@ -1,9 +1,9 @@
-<a href="{% url 'gigs:detail' g.pk %}" class="group flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition hover:border-brand-200 hover:shadow-[var(--shadow-pop)]">
+<a href="{% url 'gigs:detail' g.pk %}" data-tilt class="group flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-[var(--shadow-card)] hover:border-brand-200">
   <div class="flex items-start gap-3">
-    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon g.category.icon %}</span>
+    <span class="icon-pop pop-out grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">{% icon g.category.icon %}</span>
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-1.5 text-xs text-ink-3">{{ g.category.name }} {% sample_badge g.is_sample %}{% if g.status != "open" %}{% status_badge g.status %}{% endif %}</div>
-      <h3 class="line-clamp-2 font-semibold group-hover:text-brand-700">{{ g.title }}</h3>
+      <h3 class="line-clamp-2 font-semibold transition-colors group-hover:text-brand-600">{{ g.title }}</h3>
     </div>
     <div class="shrink-0 text-right"><div class="whitespace-nowrap font-bold tabular-nums">{{ g.budget_ugx|ugx }}</div><div class="text-xs text-ink-3">budget</div></div>
   </div>

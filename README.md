@@ -19,7 +19,7 @@ This folder is the **Django version** of CampusHub. It stands on its own and doe
 7. [The 3D tour (scroll story)](#7-the-3d-tour-scroll-story)
 8. [Sample data and resetting the database](#8-sample-data-and-resetting-the-database)
 9. [Running the tests](#9-running-the-tests)
-10. [Changing the design](#10-changing-the-design)
+10. [Changing the design (colours, fonts, hover and 3D effects)](#10-changing-the-design)
 11. [Settings and configuration](#11-settings-and-configuration)
 12. [Putting it online (deployment)](#12-putting-it-online-deployment)
 13. [Troubleshooting](#13-troubleshooting)
@@ -255,7 +255,7 @@ The CampusHub logo appears as a 3D object: the four white dots fly in and snap i
 | 1. The hub | The logo assembles | (scroll hint) |
 | 2. Buy & sell | A phone, laptop and textbook orbit the hub | Browse the marketplace |
 | 3. Gigs | Task cards fan out in front of the hub | Find a gig |
-| 4. Deals | Golden discount tickets fall and spin; the core glows | See today's deals |
+| 4. Deals | Cream discount tickets fall and spin; the core glows | See today's deals |
 | 5. Join | The hub faces you and a ring pulses outward | Join free / Start selling (or "Post something" if you're logged in) |
 
 Moving the mouse tilts the view slightly.
@@ -338,22 +338,31 @@ npm run css
 
 Text-only changes in templates don't need a rebuild; just refresh the browser.
 
-### The current look: "Café" theme
+### The current look: "Burgundy" theme
 
-The site uses a warm coffee-shop style:
+The colours and fonts come from a palette of deep burgundy, warm cream beige and muted sage grey:
 
 | Part | What it uses | Where to change it |
 |---|---|---|
-| Main colour (buttons, links) | Espresso brown `#7b5233` (`brand-600`) | `--color-brand-*` in the `@theme` block of `assets/app.css` |
-| Dark sections (hero, 3D tour) | Dark roast `#22150d` (`brand-950`) | same place |
-| Accent (highlights, gig card) | Soft gold `#d9ae63` (`accent-400`) | `--color-accent-*` |
-| Page background and cards | Cream `#f7f1e8` and `#fffdf9` | `--color-canvas`, `--color-surface` |
-| Text | Warm dark brown `#2a1e17` | `--color-ink`, `--color-ink-2`, `--color-ink-3` |
-| Headings (`h1`, `h2`, the logo name) | **Playfair Display** (serif) | `--font-display` |
+| Main colour (buttons, links, prices, logo) | Deep Burgundy `#590907` (`brand-600`) | `--color-brand-*` in the `@theme` block of `assets/app.css` |
+| Dark sections (hero, 3D tour) | Dark wine `#240302` to `#590907` | same place (`brand-950` to `brand-600`) |
+| Highlights, deal cards, "Gigs" tile | Warm Cream Beige `#E8D2B5` (`accent-400`) | `--color-accent-*` |
+| Calm surfaces (trust section, "Start selling" tile, neutral badges) | Muted Sage Grey `#A5A79B` (`sage-400`) | `--color-sage-*` |
+| Page background and cards | Cream `#f7f1e9` and `#fffcf8` | `--color-canvas`, `--color-surface` |
+| Text | Warm near-black `#2b1d1c` | `--color-ink`, `--color-ink-2`, `--color-ink-3` |
+| Headings (`h1`, `h2`, the logo name) | **Fraunces**, an elegant serif | `--font-display` |
 | Body text | **Plus Jakarta Sans** | `--font-sans` |
-| Buttons | Rounded "pill" shape | `.btn` in `assets/app.css` |
+| Small labels ("MARKETPLACE", "DEALS") | Spaced-out capitals, like the colour codes on the palette card | `.eyebrow` |
 
 Both fonts are stored inside the project in `static/font/`, so the site makes no requests to Google Fonts.
+
+**Hover effects** (all in `assets/app.css`):
+
+- **Buttons:** pill-shaped with a pressed-key edge underneath. They lift on hover, press down when clicked, and a soft light sweeps across them (`.btn`).
+- **Cards:** they lift, tilt towards the mouse and catch a light glare. Pictures zoom in gently and icons turn and change colour (`[data-tilt]`, `.icon-pop`).
+- **Header menu:** an underline grows under the link you point at, and stays under the page you're on (`.nav-link`).
+- **Footer links:** an underline slides in from the left (`.link-slide`).
+- **Filter chips, tabs and table rows:** they lift or highlight, and the logo turns slightly.
 
 A few colours live outside `app.css`, so change these too if you pick a new palette:
 
@@ -361,6 +370,7 @@ A few colours live outside `app.css`, so change these too if you pick a new pale
 - `templates/base.html`: `<meta name="theme-color">`, the colour of the phone's address bar
 - `templates/staff/overview.html`: the chart bars
 - `assets/story/scene.js`: the `COLOR` list for the 3D tour (rebuild it with `npm run story`)
+- `core/sample_art.py`: the sample listing pictures (redraw them with `.\venv\Scripts\python.exe manage.py seed --refresh-pictures`)
 
 After changing colours, rebuild everything with one command:
 
@@ -368,7 +378,20 @@ After changing colours, rebuild everything with one command:
 npm run build
 ```
 
-**Going back to the old purple look:** the earlier theme was saved to `CampusHub-Django-purple-theme-backup.zip` on your Desktop. Unzip it and copy its files over the project, replacing the current ones. This also brings back the older README, which doesn't have this section. Then run `npm run build` and restart the server.
+**Earlier looks** are saved in Git. In GitHub Desktop, open the **History** tab and look for the commit "Cafe theme…".
+
+### 3D effects on every page
+
+Besides the big 3D tour (section 7), there are light 3D effects that work on almost every page without slowing it down. They use plain CSS and a few lines of JavaScript, not WebGL.
+
+| Effect | Where you see it | How to use it |
+|---|---|---|
+| **Tilting cards** | Listing, gig, deal and service cards, homepage tiles, category tiles | Add `data-tilt` to any element. With a mouse, it leans towards the pointer, lifts and catches a glare. Add `pop-out` to something inside it to make it float above the card. |
+| **3D reveal on scroll** | Cards and section titles further down a page | Automatic for `[data-tilt]`, `.card` and section headings. Add `reveal-me` to anything else. Only things below the screen are animated, so nothing flickers on load. |
+| **Spinning 3D cube** | Page headers: marketplace, gigs, deals, services, notifications, safety/terms/privacy, login/register, staff | `{% include "includes/cube3d.html" with icon="store" %}`. Any icon name from `core/icons.py` works. It's hidden on phones to keep headers tidy. |
+| **3D buttons** | Every button | Automatic: the pressed-key edge and lift come from `.btn-primary`, `.btn-accent` and `.btn-secondary`. |
+
+The tilt only runs with a mouse; on phones, cards get a gentle lift when tapped. If the visitor's device asks for reduced motion, all 3D movement is switched off. The code is in `static/js/app.js` (bottom section) and in the "3D effects" part of `assets/app.css`.
 
 ---
 

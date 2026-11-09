@@ -3,10 +3,10 @@
 {% block content %}
 <div class="container-page pb-10">
   <div class="flex flex-col gap-3 py-6 sm:flex-row sm:items-end sm:justify-between">
-    <div><div class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600">Deals</div>
+    <div><div class="eyebrow mb-1">Deals</div>
       <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Student deals near you</h1>
       <p class="mt-1 text-ink-2">Real discounts from businesses around campus. Claim a code and show it at the counter.</p></div>
-    <a href="{% url 'deals:business_home' %}" class="btn btn-secondary">Offer a deal</a>
+    <div class="flex shrink-0 items-center gap-6">{% include "includes/cube3d.html" with icon="tag" %}<a href="{% url 'deals:business_home' %}" class="btn btn-secondary">Offer a deal</a></div>
   </div>
   <form action="{% url 'deals:browse' %}" class="mb-6 flex max-w-sm gap-2">
     <select name="campus" aria-label="Campus" class="input"><option value="all">All campuses</option>{% for c in campuses %}<option value="{{ c.slug }}" {% if campus and campus.pk == c.pk %}selected{% endif %}>{{ c }}</option>{% endfor %}</select>

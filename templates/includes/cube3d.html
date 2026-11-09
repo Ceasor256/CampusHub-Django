@@ -1,0 +1,15 @@
+{% comment %}
+Small spinning 3D cube for page headers (pure CSS, see .cube3d in assets/app.css).
+  include "includes/cube3d.html" with icon="store"
+Decorative only: hidden from screen readers, hidden on phones, still under reduced motion.
+{% endcomment %}<div class="cube3d" aria-hidden="true">
+  <div class="cube3d-shadow"></div>
+  <div class="cube3d-float"><div class="cube3d-inner">
+    <div class="cube3d-face">{% icon icon|default:"sparkles" "" %}</div>
+    <div class="cube3d-face">{% icon "store" "" %}</div>
+    <div class="cube3d-face">{% icon "briefcase" "" %}</div>
+    <div class="cube3d-face">{% icon "tag" "" %}</div>
+    <div class="cube3d-face">{% icon "message-circle" "" %}</div>
+    <div class="cube3d-face">{% icon "shield-check" "" %}</div>
+  </div></div>
+</div>
